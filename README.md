@@ -25,6 +25,7 @@ stack-fetcher:
      * External script
  * Make "generated"
    * Almost (?) entirely an external script
+   * Should present credentials to that script
  * Get "current"
    * Needs to know how to get credentials 
    * Needs to know what region to use
@@ -64,6 +65,14 @@ core:
    * no sensible default possible?  Or at least, default would be very modav-specific
  * given args + which stack (+ stored metadata), retrieve stack
    * s-f can provide an implementation of this, as long as we have credentials + region
+   * must respect `$https_proxy`
  * given args + which stack (+ "next"), push stack change
    * s-f can provide an implementation of this, as long as we have credentials + region
+   * must respect `$https_proxy`
+
+What we need to plug in for (sufficient) compatibility with BBC modav stack-fetcher?
+
+ * stack name suggester
+ * generate (template.py / modav-generate-templates; generate-template; transform; cosmos-cloudformation-postproc.rb)
+ * "register with Cosmos" - drop?  Or as some sort of wrapped hook around "push stack change"?
 
