@@ -7,6 +7,14 @@ What is it?
 A semi-interactive tool for helping to create and update AWS Cloudformation
 stacks.
 
+Some background
+---------------
+
+This tool already exists (I wrote about it here:
+https://medium.com/@rvedotrc/managing-aws-cloudformation-templates-using-stack-fetcher-4d798d406fd0)
+but it has, shall we say, "evolved". It would benefit from a rethink and a
+rewrite before being opened up to the world.  So this is that rewrite.
+
 Features (and whether or not to include them natively)
 ------------------------------------------------------
 
