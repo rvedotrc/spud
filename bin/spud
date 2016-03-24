@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+$: << "lib"
+require "stack-fetcher"
+StackFetcher::Main.new(ARGV).run
