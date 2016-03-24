@@ -1,3 +1,5 @@
+require 'readline'
+
 module StackFetcher
 
   class UserInteraction
@@ -7,14 +9,21 @@ module StackFetcher
       # :prefill (may be nil)
       # return: text (single line, chomped)
 
-      # Dead simple option.  TODO, use readline with history pre-fill.
-      print opts[:question]
-      if opts[:prefill]
-        print " (e.g. #{opts[:prefill]})"
-      end
-      print ": "
+      prompt = opts[:question]
 
-      $stdin.readline.chomp
+      if opts[:prefill]
+        Readline::HISTORY.push opts[:prefill]
+        prompt += " (press up for default)"
+      end
+
+      answer = nil
+
+      while true
+        answer = Readline.readline "#{prompt}: "
+        break if answer.match /\S/
+      end
+
+      answer
     end
 
   end
