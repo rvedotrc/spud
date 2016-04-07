@@ -15,6 +15,22 @@ https://medium.com/@rvedotrc/managing-aws-cloudformation-templates-using-stack-f
 but it has, shall we say, "evolved". It would benefit from a rethink and a
 rewrite before being opened up to the world.  So this is that rewrite.
 
+Development status
+------------------
+
+Definitely not finished!
+
+To see what it does so far:
+
+ * `cd scripts ; ln -s default modav ; cd ..`
+ * ensure your environment contains your AWS credentials if required
+ * ensure you can access AWS without using a proxy (sorry, no proxy support yet)
+ * `mkdir -p src/test`
+ * copy some stack template to `src/test/template.json`
+ * `./bin/spud`
+ * When prompted, enter the name of some stack that already exists in your account
+ * `ls -l tmp/templates` and view the files with your favourite diff tool
+
 Features (and whether or not to include them natively)
 ------------------------------------------------------
 
