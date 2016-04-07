@@ -61,12 +61,22 @@ core:
 
  * given args + which stack, generate suggested stack name
    * it's fine not to have a default implementation of this
- * given args + which stack, make "generated"
+   * argv + which stack
+   * output to stdout, for now
+ * given args, make "generated"
    * no sensible default possible?  Or at least, default would be very modav-specific
- * given args + which stack (+ stored metadata), retrieve stack
+   * output is to files, not stdout
+   * initially generate just template; later we can add descriptor
+   * would be advantageous to generate N stacks
+    * since the script obviously has to emit json, maybe it makes sense for its input to be json too, viz:
+    * `{ "argv": [ ... ], "stacks": { "resource": { "template": "somefile", "descriptor": "somefile" } } }`
+ * given args, retrieve stack
    * s-f can provide an implementation of this, as long as we have credentials + region
    * must respect `$https_proxy`
+   * again, input as json, output to files:
+    * `{ "argv": [ ... ], "stacks": { "resource": { "name": "SomeStackName", "template": "somefile", "descriptor": "somefile" } } }`
  * given args + which stack (+ "next"), push stack change
+   * s-f does all the diffing and prompting.  script does apply + progress / wait
    * s-f can provide an implementation of this, as long as we have credentials + region
    * must respect `$https_proxy`
 
