@@ -15,6 +15,8 @@ module StackFetcher
       @tmp_files = TmpFiles.new(@context)
       @tmp_files.clean!
       Puller.new(context, tmp_files).get_all
+      Generator.new(context, tmp_files).generate_all
+      NormaliserRunner.new(context, tmp_files).normalise_all
       p @context
       context.save
     end

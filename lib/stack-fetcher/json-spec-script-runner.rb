@@ -28,7 +28,7 @@ module StackFetcher
 
         pid = Process.spawn(
           @cmd,
-          in: tmpfile.fileno,
+          in: tmpfile.fileno, # guaranteed to be a file, not e.g. a fifo
         )
         Process.wait(pid)
 

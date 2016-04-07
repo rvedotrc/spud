@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+require 'json'
+spec = JSON.parse($stdin.read)
+
+puts "default generate-stacks run with argv = #{spec["argv"].inspect}"
+
+env = spec["argv"].last || "default"
+
+spec["stacks"].entries.sort_by(&:first).each do |type, details|
+  stack_name = details["name"]
+
+  # Just a dumb file copy
+  t_content = IO.read("src/#{type}/template.#{env}.json")
+
+  IO.write(details["template"], t_content)
+end
