@@ -2,7 +2,7 @@ module StackFetcher
 
   class Main
 
-    attr_reader :context
+    attr_reader :context, :tmp_files
 
     def initialize(argv)
       @context = Context.new
@@ -12,6 +12,9 @@ module StackFetcher
     def run
       @context.stack_types = StackTypes.new(context).list
       @context.stack_names = StackFinder.new(context).get_names
+      @tmp_files = TmpFiles.new(@context)
+      @tmp_files.clean!
+      Puller.new(context, tmp_files).get_all
       p @context
       context.save
     end
