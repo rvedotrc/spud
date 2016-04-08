@@ -17,7 +17,14 @@ module StackFetcher
       Puller.new(context, tmp_files).get_all
       Generator.new(context, tmp_files).generate_all
       NormaliserRunner.new(context, tmp_files).normalise_all
+      comparison = StackComparer.new(context, tmp_files).compare
       p @context
+      p comparison
+
+      puts ""
+      comparison.print
+      puts ""
+
       context.save
     end
 
