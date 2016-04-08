@@ -15,6 +15,13 @@ module StackFetcher
       FileUtils.rm_f all
     end
 
+    def copy_current_to_next
+      context.stack_types.each do |stack_type|
+        FileUtils.cp current_template(stack_type), next_template(stack_type)
+        FileUtils.cp current_description(stack_type), next_description(stack_type)
+      end
+    end
+
     def current_template(type)
       make_path "template-#{type}.#{env}.current.json"
     end

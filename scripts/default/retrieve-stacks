@@ -14,6 +14,7 @@ cfn_client = Aws::CloudFormation::Client.new(config)
 # description + template
 spec["stacks"].entries.sort_by(&:first).each do |type, details|
   stack_name = details["name"]
+  puts "Retrieving stack #{stack_name.inspect}"
 
   template = description = nil
 
