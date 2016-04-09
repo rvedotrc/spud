@@ -31,7 +31,7 @@ module StackFetcher
       # s-f can provide a default implementation (but it can know nothing about
       # credentials, other than what's already in the environment).
       JsonSpecScriptRunner.new(
-        cmd: "./scripts/modav/retrieve-stacks",
+        cmd: File.join(context.scripts_dir, "retrieve-stacks"),
         spec: spec,
       ).run!
     end

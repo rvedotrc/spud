@@ -37,7 +37,10 @@ Usage: spud [GLOBAL-OPTIONS] apply [ARGS ...]
 Usage: spud help
 
 EOF
-        opts.on("-t", "--tmp-dir=s", "Working files directory (default: #{context.tmp_dir})") do |v|
+        opts.on("-s", "--scripts-dir=DIR", "Scripts directory (default: #{context.scripts_dir})") do |v|
+          context.scripts_dir = v
+        end
+        opts.on("-t", "--tmp-dir=DIR", "Working files directory (default: #{context.tmp_dir})") do |v|
           context.tmp_dir = v
         end
         opts.separator <<'EOF'

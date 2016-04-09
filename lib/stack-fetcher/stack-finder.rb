@@ -49,7 +49,7 @@ module StackFetcher
 
     def get_suggestion(type)
       name = ScriptRunner.new(
-        cmd: "./scripts/modav/get-stack-name-suggestion",
+        cmd: File.join(context.scripts_dir, "get-stack-name-suggestion"),
         args: [ type ] + context.argv,
       ).run!.output.chomp
 

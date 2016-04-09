@@ -22,7 +22,6 @@ Definitely not finished!
 
 To see what it does so far:
 
- * `cd scripts ; ln -s default modav ; cd ..`
  * ensure your environment contains your AWS credentials if required
  * ensure you can access AWS without using a proxy (sorry, no proxy support yet)
  * `mkdir -p src/test`
