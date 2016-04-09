@@ -53,7 +53,7 @@ module StackFetcher
     end
 
     def show_instructions
-      cmd = [ "spud", "update" ] + context.argv
+      cmd = [ "spud", "apply" ] + context.argv
       update_command = Shellwords.join cmd
 
       puts <<EOF
