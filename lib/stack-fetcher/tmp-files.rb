@@ -46,6 +46,12 @@ module StackFetcher
       make_path "description-#{type}.next.json"
     end
 
+    def current_generated_next_shell(type)
+      Shellwords.shellescape(context.tmp_dir) +
+        "/" +
+        "template-#{Shellwords.shellescape type}.{current,generated,next}.json"
+    end
+
     private
 
     def all

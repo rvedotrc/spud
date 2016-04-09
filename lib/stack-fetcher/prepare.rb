@@ -54,9 +54,6 @@ module StackFetcher
     end
 
     def show_instructions
-      cmd = [ "spud", "apply" ] + context.argv
-      update_command = Shellwords.join cmd
-
       puts <<EOF
 You should now edit the "next" files to suit, for example using the following
 commands:
@@ -65,15 +62,13 @@ EOF
 
       context.stack_types.each do |t|
         puts <<EOF
-  #{Shellwords.join [ "vimdiff", tmp_files.current_template(t), tmp_files.generated_template(t), tmp_files.next_template(t) ]} ; vim #{Shellwords.shellescape tmp_files.next_description(t)}
+  vimdiff #{tmp_files.current_generated_next_shell(t)} ; vim #{Shellwords.shellescape tmp_files.next_description(t)}
 EOF
       end
 
       puts <<EOF
 
-then run the following command to review and apply your changes:
-
-  #{update_command}
+then run spud "apply".
 
 EOF
     end
