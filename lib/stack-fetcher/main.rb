@@ -1,3 +1,4 @@
+require 'optparse'
 require 'shellwords'
 
 module StackFetcher
@@ -8,18 +9,18 @@ module StackFetcher
 
     def initialize(argv)
       @context = Context.new
-      @context.argv = argv.dup.freeze
+      @context.argv = argv.dup
     end
 
     def run
-      # Read options
+      read_options
+
       # --batch (future - disable all user input; show machine-parseable output)
-      # --tmp-dir (override tmp/templates, thus no need for "env" in filename)
       # --script-dir (thus no need for modav in codebase)
       # --config-set (== env; store separate sets of config in stack_names file)
-      # create | update
+      # prepare | apply
 
-      # move tmp_files to context
+      # move tmp_files to context?
       # have each tmp file be (name+content) object with methods to save, etc
 
       @context.stack_types = StackTypes.new(context).list
@@ -55,6 +56,29 @@ module StackFetcher
 
       context.save
       p @context
+    end
+
+    def read_options
+      opts_parser = OptionParser.new do |opts|
+        opts.banner = <<'EOF'
+
+Usage: spud [GLOBAL-OPTIONS] [ARGS ...]
+
+EOF
+        opts.on("-t", "--tmp-dir=s", "Working files directory (default: #{context.tmp_dir})") do |v|
+          context.tmp_dir = v
+        end
+        opts.separator <<'EOF'
+
+Any ARGS are uninterpreted by spud (ish, FIXME) but made available to the
+various external scripts.
+
+The working files directory (default: #{context.tmp_dir}) will be created
+(like "mkdir -p") on startup, and is NOT cleaned up on exit.
+
+EOF
+      end
+      opts_parser.parse! context.argv
     end
 
     def show_instructions

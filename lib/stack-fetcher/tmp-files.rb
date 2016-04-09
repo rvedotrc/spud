@@ -23,27 +23,27 @@ module StackFetcher
     end
 
     def current_template(type)
-      make_path "template-#{type}.#{env}.current.json"
+      make_path "template-#{type}.current.json"
     end
 
     def generated_template(type)
-      make_path "template-#{type}.#{env}.generated.json"
+      make_path "template-#{type}.generated.json"
     end
 
     def next_template(type)
-      make_path "template-#{type}.#{env}.next.json"
+      make_path "template-#{type}.next.json"
     end
 
     def current_description(type)
-      make_path "description-#{type}.#{env}.current.json"
+      make_path "description-#{type}.current.json"
     end
 
     def generated_description(type)
-      make_path "description-#{type}.#{env}.generated.json"
+      make_path "description-#{type}.generated.json"
     end
 
     def next_description(type)
-      make_path "description-#{type}.#{env}.next.json"
+      make_path "description-#{type}.next.json"
     end
 
     private
@@ -61,21 +61,12 @@ module StackFetcher
       end.flatten
     end
 
-    def env
-      # FIXME this will be fixed (made obsolete) by the --tmp-dir option
-      context.argv.last || "default"
-    end
-
-    def tmp_dir
-      File.join "tmp", "templates"
-    end
-
     def ensure_tmp_dir
-      FileUtils.mkdir_p tmp_dir
+      FileUtils.mkdir_p context.tmp_dir
     end
 
     def make_path(basename)
-      File.join tmp_dir, basename
+      File.join context.tmp_dir, basename
     end
 
   end

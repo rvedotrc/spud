@@ -5,11 +5,13 @@ module StackFetcher
     JSON_FILE = "stack_names.json"
 
     attr_accessor :argv
+    attr_accessor :tmp_dir
     attr_accessor :stack_types
     attr_accessor :stack_names
     attr_reader :config
 
     def initialize
+      @tmp_dir = File.join "tmp", "templates"
       @persisted_config = load_config
       @config = deep_copy(@persisted_config)
     end
