@@ -64,7 +64,7 @@ EOF
 
       context.stack_types.each do |t|
         puts <<EOF
-  vimdiff #{Shellwords.join [ "vimdiff", tmp_files.current_template(t), tmp_files.generated_template(t), tmp_files.next_template(t) ]} ; vim #{Shellwords.shellescape tmp_files.next_description(t)}
+  #{Shellwords.join [ "vimdiff", tmp_files.current_template(t), tmp_files.generated_template(t), tmp_files.next_template(t) ]} ; vim #{Shellwords.shellescape tmp_files.next_description(t)}
 EOF
       end
 
