@@ -27,7 +27,7 @@ To see what it does so far:
  * ensure you can access AWS without using a proxy (sorry, no proxy support yet)
  * `mkdir -p src/test`
  * copy some stack template to `src/test/template.json`
- * `./bin/spud`
+ * `./bin/spud prepare`
  * When prompted, enter the name of some stack that already exists in your account
  * `ls -l tmp/templates` and view the files with your favourite diff tool
 

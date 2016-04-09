@@ -1,5 +1,4 @@
 require 'optparse'
-require 'shellwords'
 
 module StackFetcher
 
@@ -15,47 +14,18 @@ module StackFetcher
     def run
       read_options
 
-      # --batch (future - disable all user input; show machine-parseable output)
-      # --script-dir (thus no need for modav in codebase)
-      # --config-set (== env; store separate sets of config in stack_names file)
-      # prepare | apply
+      verb = context.argv.shift
 
-      # move tmp_files to context?
-      # have each tmp file be (name+content) object with methods to save, etc
-
-      @context.stack_types = StackTypes.new(context).list
-
-      if @context.stack_types.empty?
-        puts "No stack types defined - nothing to do"
-        return
+      case verb
+      when nil
+        show_help
+      when "prepare"
+        Prepare.new(context).run
+      else
+        $stderr.puts "Unknown invocation #{verb.inspect}"
+        show_help
+        exit 2
       end
-
-      puts "Determining stack names"
-      @context.stack_names = StackFinder.new(context).get_names
-      @tmp_files = TmpFiles.new(@context)
-      @tmp_files.clean!
-      puts ""
-
-      puts "Retrieving existing stacks"
-      Puller.new(context, tmp_files).get_all
-      puts ""
-
-      puts "Generating target stacks"
-      Generator.new(context, tmp_files).generate_all
-      puts ""
-
-      NormaliserRunner.new(context, tmp_files).normalise_all
-      tmp_files.copy_current_to_next
-
-      comparison = StackComparer.new(context, tmp_files).compare
-      puts ""
-      comparison.print
-      puts ""
-
-      show_instructions
-
-      context.save
-      p @context
     end
 
     def read_options
@@ -78,32 +48,19 @@ The working files directory (default: #{context.tmp_dir}) will be created
 
 EOF
       end
-      opts_parser.parse! context.argv
+
+      begin
+        opts_parser.parse! context.argv
+      rescue OptionParser::InvalidOption => e
+        $stderr.puts e
+        show_help
+        exit 2
+      end
     end
 
-    def show_instructions
-      cmd = [ "spud", "update" ] + context.argv
-      update_command = Shellwords.join cmd
-
-      puts <<EOF
-You should now edit the "next" files to suit, for example using the following
-commands:
-
-EOF
-
-      context.stack_types.each do |t|
-        puts <<EOF
-  vimdiff #{Shellwords.join [ "vimdiff", tmp_files.current_template(t), tmp_files.generated_template(t), tmp_files.next_template(t) ]} ; vim #{Shellwords.shellescape tmp_files.next_description(t)}
-EOF
-      end
-
-      puts <<EOF
-
-then run the following command to review and apply your changes:
-
-  #{update_command}
-
-EOF
+    def show_help
+      context.argv = ["--help"]
+      read_options
     end
 
   end
