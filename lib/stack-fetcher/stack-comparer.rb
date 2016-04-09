@@ -1,4 +1,5 @@
 require 'json'
+require 'shellwords'
 
 module StackFetcher
 
@@ -54,8 +55,8 @@ module StackFetcher
     end
 
     def diff_stats(file1, file2)
-      # FIXME shell quoting
-      lines = `diff #{file1} #{file2}`.lines
+      command = Shellwords.join([ "diff", "--", file1, file2 ])
+      lines = `#{command}`.lines
       hunk_count = lines.select {|t| t.match /^\d+/ }.count
       lines_count = lines.count - hunk_count
       { hunks: hunk_count, lines: lines_count }
