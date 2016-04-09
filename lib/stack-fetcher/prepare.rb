@@ -38,6 +38,7 @@ module StackFetcher
       Generator.new(context, tmp_files).generate_all
       puts ""
 
+      puts "Normalising"
       NormaliserRunner.new(context, tmp_files).normalise_all
       tmp_files.copy_current_to_next
 

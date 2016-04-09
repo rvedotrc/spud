@@ -31,7 +31,6 @@ module StackFetcher
     end
 
     def normalise_file(f)
-      puts "Normalising #{f}"
       d = JSON.parse(IO.read f)
 
       d = convert_description(d)
