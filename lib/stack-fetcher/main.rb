@@ -12,6 +12,16 @@ module StackFetcher
     end
 
     def run
+      # Read options
+      # --batch (future - disable all user input; show machine-parseable output)
+      # --tmp-dir (override tmp/templates, thus no need for "env" in filename)
+      # --script-dir (thus no need for modav in codebase)
+      # --config-set (== env; store separate sets of config in stack_names file)
+      # create | update
+
+      # move tmp_files to context
+      # have each tmp file be (name+content) object with methods to save, etc
+
       @context.stack_types = StackTypes.new(context).list
 
       if @context.stack_types.empty?
