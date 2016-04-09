@@ -62,7 +62,7 @@ module StackFetcher
     end
 
     def env
-      # FIXME
+      # FIXME this will be fixed (made obsolete) by the --tmp-dir option
       context.argv.last || "default"
     end
 

@@ -38,9 +38,10 @@ module StackFetcher
 
     def check_results
       # FIXME what is the required behaviour (of the external script) if the
-      # stack doesn't yet exist?
+      # stack doesn't yet exist? How do we represent that in our state (in the
+      # tmp dir)?
 
-      # FIXME also, what is the expected format of the description file?
+      # FIXME what is the expected format of the description file?
       # e.g. stack_name vs StackName; include the Stacks [ ... ] wrapper or
       # not?
 

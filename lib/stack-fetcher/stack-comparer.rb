@@ -28,7 +28,7 @@ module StackFetcher
     private
 
     def compare_template_files(file1, file2)
-      # FIXME avoid repeatedly re-reading and re-parseing everything
+      # FIXME optimisation: avoid repeatedly re-reading and re-parseing everything
       x = JSON.parse(IO.read file1)
       y = JSON.parse(IO.read file2)
 
