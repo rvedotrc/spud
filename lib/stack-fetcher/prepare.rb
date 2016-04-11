@@ -50,7 +50,6 @@ module StackFetcher
       show_instructions
 
       context.save
-      p @context
     end
 
     def show_instructions
