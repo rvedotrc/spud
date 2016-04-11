@@ -43,6 +43,9 @@ EOF
         opts.on("-t", "--tmp-dir=DIR", "Working files directory (default: #{context.tmp_dir})") do |v|
           context.tmp_dir = v
         end
+        opts.on("-c", "--config-set=KEY", "Which configuration set to use (default: #{context.config_set.inspect}") do |v|
+          context.config_set = v
+        end
         opts.separator <<'EOF'
 
 Any ARGS are uninterpreted by spud but made available to the various external
@@ -52,6 +55,11 @@ The working files directory (default: #{context.tmp_dir}) will be created
 (like "mkdir -p") on startup, and is NOT cleaned up on exit.  The scripts
 directory defaults to a directory within 'stack-fetcher'; if you override
 --scripts-dir, you can find the default using $SF_DEFAULT_SCRIPTS_DIR.
+
+--config-set=KEY can be used to store several independent sets of
+configuration (in "stack_names.json").  For example if you have "int", "test"
+and "live" environments, you could use --config-set=int (etc).  If the KEY
+contains dots then these are interpreted as JSON object key separators.
 
 EOF
       end

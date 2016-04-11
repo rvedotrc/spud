@@ -7,17 +7,24 @@ module StackFetcher
     attr_accessor :argv
     attr_accessor :scripts_dir
     attr_accessor :tmp_dir
+    attr_accessor :config_set
     attr_accessor :stack_types
     attr_accessor :stack_names
-    attr_reader :config
 
     def initialize
       @scripts_dir = File.expand_path("../../scripts/default", File.dirname(__FILE__))
       # FIXME find a cleaner solution
       ENV["SF_DEFAULT_SCRIPTS_DIR"] = @scripts_dir
       @tmp_dir = File.join "tmp", "templates"
+      @config_set = "default"
       @persisted_config = load_config
       @config = deep_copy(@persisted_config)
+    end
+
+    def config
+      config_set.split(/\./).reduce(@config) do |c, k|
+        c[k] ||= {}
+      end
     end
 
     def save
