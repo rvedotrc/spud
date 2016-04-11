@@ -1,15 +1,15 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name        = 'stack-fetcher'
+  s.name        = 'spud'
   s.version     = '2.0.0'
   s.summary     = 'Tool for generating and managing CloudFormation stacks'
   s.description = <<-EOF
-    stack-fetcher is a tool for generating CloudFormation stack templates,
+    spud is a tool for generating CloudFormation stack templates,
     comparing them to the existing templates in AWS, merging the results,
     then pushing the results back to CloudFormation.
   EOF
-  s.homepage    = 'http://rve.org.uk/gems/stack-fetcher'
+  s.homepage    = 'http://rve.org.uk/gems/spud'
   s.authors     = ['Rachel Evans']
   s.email       = 'rachel.evans@bbc.co.uk'
   s.license     = 'Apache-2.0'

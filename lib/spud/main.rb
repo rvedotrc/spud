@@ -53,8 +53,8 @@ scripts.
 
 The working files directory (default: #{context.tmp_dir}) will be created
 (like "mkdir -p") on startup, and is NOT cleaned up on exit.  The scripts
-directory defaults to a directory within 'stack-fetcher'; if you override
---scripts-dir, you can find the default using $SF_DEFAULT_SCRIPTS_DIR.
+directory defaults to a directory within 'spud'; if you override
+--scripts-dir, you can find the default using $SPUD_DEFAULT_SCRIPTS_DIR.
 
 --config-set=KEY can be used to store several independent sets of
 configuration (in "stack_names.json").  For example if you have "int", "test"

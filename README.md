@@ -1,5 +1,5 @@
-stack-fetcher
-=============
+spud
+====
 
 What is it?
 -----------
@@ -22,18 +22,19 @@ Definitely not finished!
 
 To see what it does so far:
 
+ * `gem build spud.gemspec && gem install spud*.gem`
  * ensure your environment contains your AWS credentials if required
  * ensure you can access AWS without using a proxy (sorry, no proxy support yet)
  * `mkdir -p src/test`
  * copy some stack template to `src/test/template.json`
- * `./bin/spud prepare`
+ * `spud prepare`
  * When prompted, enter the name of some stack that already exists in your account
  * `ls -l tmp/templates` and view the files with your favourite diff tool
 
 Features (and whether or not to include them natively)
 ------------------------------------------------------
 
-stack-fetcher:
+spud prepare:
 
  * Work out the stack name
    * Default stack name
@@ -50,7 +51,7 @@ stack-fetcher:
    * Batch mode: parseable output / exit status
    * Interactive mode: show summary with invite to edit
 
-stack-updater:
+spud apply:
 
  * Check for missing params etc
  * Compare; show diffs; prompt to apply
@@ -71,8 +72,7 @@ general:
 Core vs externals
 -----------------
 
-This suggests the following things should be outside of the stack-fetcher
-core:
+This suggests the following things should be outside of the spud core:
 
  * given args + which stack, generate suggested stack name
    * it's fine not to have a default implementation of this
