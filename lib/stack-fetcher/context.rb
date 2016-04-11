@@ -12,7 +12,9 @@ module StackFetcher
     attr_reader :config
 
     def initialize
-      @scripts_dir = File.join "scripts", "default"
+      @scripts_dir = File.expand_path("../../scripts/default", File.dirname(__FILE__))
+      # FIXME find a cleaner solution
+      ENV["SF_DEFAULT_SCRIPTS_DIR"] = @scripts_dir
       @tmp_dir = File.join "tmp", "templates"
       @persisted_config = load_config
       @config = deep_copy(@persisted_config)

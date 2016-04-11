@@ -37,7 +37,7 @@ Usage: spud [GLOBAL-OPTIONS] apply [ARGS ...]
 Usage: spud help
 
 EOF
-        opts.on("-s", "--scripts-dir=DIR", "Scripts directory (default: #{context.scripts_dir})") do |v|
+        opts.on("-s", "--scripts-dir=DIR", "Scripts directory (default: see below)") do |v|
           context.scripts_dir = v
         end
         opts.on("-t", "--tmp-dir=DIR", "Working files directory (default: #{context.tmp_dir})") do |v|
@@ -49,7 +49,9 @@ Any ARGS are uninterpreted by spud but made available to the various external
 scripts.
 
 The working files directory (default: #{context.tmp_dir}) will be created
-(like "mkdir -p") on startup, and is NOT cleaned up on exit.
+(like "mkdir -p") on startup, and is NOT cleaned up on exit.  The scripts
+directory defaults to a directory within 'stack-fetcher'; if you override
+--scripts-dir, you can find the default using $SF_DEFAULT_SCRIPTS_DIR.
 
 EOF
       end
