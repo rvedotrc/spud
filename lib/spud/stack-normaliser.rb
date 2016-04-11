@@ -6,7 +6,7 @@ require 'json'
 
 # For easier comparisons, e.g. by diff
 
-module StackFetcher
+module Spud
 
   class StackNormaliser
 

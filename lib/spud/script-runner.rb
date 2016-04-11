@@ -1,6 +1,6 @@
 require 'tempfile'
 
-module StackFetcher
+module Spud
 
   class ScriptRunner
 

@@ -1,4 +1,4 @@
-module StackFetcher
+module Spud
 
   class Context
 

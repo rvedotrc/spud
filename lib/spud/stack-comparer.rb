@@ -1,7 +1,7 @@
 require 'json'
 require 'shellwords'
 
-module StackFetcher
+module Spud
 
   class StackComparer
 

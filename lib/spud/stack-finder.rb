@@ -1,6 +1,6 @@
 require 'json'
 
-module StackFetcher
+module Spud
 
   class StackFinder
 

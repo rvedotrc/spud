@@ -1,6 +1,6 @@
 require 'fileutils'
 
-module StackFetcher
+module Spud
 
   class TmpFiles
 

@@ -1,6 +1,6 @@
 require 'optparse'
 
-module StackFetcher
+module Spud
 
   class Main
 

@@ -1,6 +1,6 @@
 require 'shellwords'
 
-module StackFetcher
+module Spud
 
   class Prepare
 

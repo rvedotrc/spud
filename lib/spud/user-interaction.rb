@@ -1,6 +1,6 @@
 require 'readline'
 
-module StackFetcher
+module Spud
 
   class UserInteraction
 
