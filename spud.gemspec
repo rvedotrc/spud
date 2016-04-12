@@ -16,6 +16,9 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.files       = Dir.glob(%w[
+README.md
+Gemfile
+Gemfile.lock
 bin/*
 lib/**/*.rb
 scripts/default/*
