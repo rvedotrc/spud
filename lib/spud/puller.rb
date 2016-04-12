@@ -22,8 +22,8 @@ module Spud
         stacks: context.stack_types.each_with_object({}) do |t, h|
           h[t] = {
             name: context.stack_names[t],
-            template: tmp_files.current_template(t),
-            description: tmp_files.current_description(t),
+            template: tmp_files.get(:current_template, t).path,
+            description: tmp_files.get(:current_description, t).path,
           }
         end,
       }
@@ -47,14 +47,16 @@ module Spud
 
       files = context.stack_types.map do |t|
         [
-          tmp_files.current_template(t),
-          tmp_files.current_description(t),
+          tmp_files.get(:current_template, t),
+          tmp_files.get(:current_description, t),
         ]
       end.flatten
 
-      files.each do |f|
+      files.each do |t|
+        f = t.path
         begin
-          data = JSON.parse(IO.read f)
+          t.discard!
+          t.data
         rescue Errno::ENOENT => e
           $stderr.puts "Error: retrieve-stacks script ran, but did not create #{f}"
           exit 1

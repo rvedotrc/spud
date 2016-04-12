@@ -22,26 +22,21 @@ module Spud
     def files
       context.stack_types.map do |t|
         [
-          tmp_files.current_template(t),
-          tmp_files.current_description(t),
-          tmp_files.generated_template(t),
-          # tmp_files.generated_description(t),
+          tmp_files.get(:current_template, t),
+          tmp_files.get(:current_description, t),
+          tmp_files.get(:generated_template, t),
+          # tmp_files.get(:generated_description, t),
         ]
       end.flatten
     end
 
     def normalise_file(f)
-      d = JSON.parse(IO.read f)
-
+      d = f.data
       d = convert_description(d)
-
       n = StackNormaliser.new(true).normalise_stack(d)
       n = HashSorter.new.sort_hash n
-      content = JSON.pretty_generate(n) + "\n"
-
-      tmp = f + ".tmp"
-      IO.write tmp, content
-      File.rename tmp, f
+      f.data = n
+      f.flush!
     end
 
     # Eww. Doesn't really belong here?

@@ -49,6 +49,7 @@ module Spud
 
       show_instructions
 
+      tmp_files.flush
       context.save
     end
 
@@ -61,7 +62,7 @@ EOF
 
       context.stack_types.each do |t|
         puts <<EOF
-  vimdiff #{tmp_files.current_generated_next_shell(t)} ; vim #{Shellwords.shellescape tmp_files.next_description(t)}
+  vimdiff #{tmp_files.current_generated_next_shell(t)} ; vim #{Shellwords.shellescape tmp_files.get(:next_description, t).path}
 EOF
       end
 

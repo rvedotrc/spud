@@ -4,7 +4,7 @@ module Spud
 
   class Main
 
-    attr_reader :context, :tmp_files
+    attr_reader :context
 
     def initialize(argv)
       @context = Context.new

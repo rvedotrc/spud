@@ -16,8 +16,8 @@ module Spud
       d = context.stack_types.each_with_object({}) do |stack_type, h|
         h[stack_type] = {
           template: compare_template_files(
-            tmp_files.current_template(stack_type),
-            tmp_files.generated_template(stack_type),
+            tmp_files.get(:current_template, stack_type),
+            tmp_files.get(:generated_template, stack_type),
           )
         }
       end
@@ -28,9 +28,8 @@ module Spud
     private
 
     def compare_template_files(file1, file2)
-      # FIXME optimisation: avoid repeatedly re-reading and re-parseing everything
-      x = JSON.parse(IO.read file1)
-      y = JSON.parse(IO.read file2)
+      x = file1.data
+      y = file2.data
 
       if x == y
         { result: :same }
@@ -55,7 +54,9 @@ module Spud
     end
 
     def diff_stats(file1, file2)
-      command = Shellwords.join([ "diff", "--", file1, file2 ])
+      file1.flush
+      file2.flush
+      command = Shellwords.join([ "diff", "--", file1.path, file2.path ])
       lines = `#{command}`.lines
       hunk_count = lines.select {|t| t.match /^\d+/ }.count
       lines_count = lines.count - hunk_count
