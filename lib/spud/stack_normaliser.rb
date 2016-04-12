@@ -1,4 +1,4 @@
-require 'hash-sorter'
+require 'hash_sorter'
 require 'json'
 
 # Only make NON-FUNCTIONAL changes to the json
