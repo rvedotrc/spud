@@ -69,11 +69,11 @@ The work to do is presented on stdin as JSON, of the following structure:
 
 ```
     {
-      "argv": [ a possibly-empty array of strings - arguments passed to "spud prepare" ],
-      "stacks": {
-	"blue": { "name": "NameOfBlue", "template": "...", "description": "..." },
-	"green": { "name": "NameOfBlue", "template": "...", "description": "..." },
-      }
+        "argv": [ ... ],
+        "stacks": {
+            "blue": { "name": "NameOfBlue", "template": "...", "description": "..." },
+            "green": { "name": "NameOfGreen", "template": "...", "description": "..." }
+        }
     }
 ```
 
@@ -83,18 +83,18 @@ prepare`.  `stacks` has one entry per stack type, where each stack type has a
 stack's template to) and `description` (filename to write the stack's
 description to).
 
-The description should be of the structure:
+The description written should be of the structure:
 
 ```
     {
-      "Stacks": [ {
-	"Capabilities": ...,
-	"Description": ...
-      } ]
+        "Stacks": [ {
+            "Capabilities": ...,
+            "Description": ...
+        } ]
     }
 ```
 
-i.e. with a `Stacks` wrapper, and using `TitleCase` keys (not `snake _ case`).
+i.e. with a `Stacks` array wrapper, and using `TitleCase` keys (not ```snake_case```).
 
 stdout and stderr are unchanged (i.e. they're probably the terminal), and
 ARGV is not used.
