@@ -15,8 +15,7 @@ module Spud
     end
 
     def normalise_stack(d)
-      # Deep clone
-      d = JSON.parse(JSON.generate d)
+      d = Spud.deep_copy d
 
       if d["Stacks"]
         normalise_description d

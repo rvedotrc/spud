@@ -1,6 +1,7 @@
 require_relative 'spud/main'
 require_relative 'spud/context'
 require_relative 'spud/cloudformation-limits'
+require_relative 'spud/data-utils'
 require_relative 'spud/generator'
 require_relative 'spud/json-spec-script-runner'
 require_relative 'spud/normaliser-runner'

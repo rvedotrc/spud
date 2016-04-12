@@ -18,7 +18,7 @@ module Spud
       @tmp_dir = File.join "tmp", "templates"
       @config_set = "default"
       @persisted_config = load_config
-      @config = deep_copy(@persisted_config)
+      @config = Spud.deep_copy(@persisted_config)
     end
 
     def config
@@ -30,15 +30,11 @@ module Spud
     def save
       if @config != @persisted_config
         save_config @config
-        @persisted_config = deep_copy(@config)
+        @persisted_config = Spud.deep_copy(@config)
       end
     end
 
     private
-
-    def deep_copy(data)
-      JSON.parse(JSON.generate data)
-    end
 
     def load_config
       begin
