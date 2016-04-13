@@ -27,7 +27,7 @@ module Spud
         tmpfile.rewind
 
         pid = Process.spawn(
-          @cmd,
+          [ @cmd, @cmd ],
           in: tmpfile.fileno, # guaranteed to be a file, not e.g. a fifo
         )
         Process.wait(pid)
