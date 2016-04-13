@@ -52,7 +52,9 @@ EOF
     tmpscript = Tempfile.new('spud-rspec')
     tmpscript.puts <<EOF
 #!/bin/sh
-perl -le 'print "OK" if -f "/dev/stdin"' > #{Shellwords.shellescape tmpout.path}
+if [ -f /dev/stdin ] ; then
+  echo OK > #{Shellwords.shellescape tmpout.path}
+fi
 EOF
     tmpscript.flush
     tmpscript.chmod 0755

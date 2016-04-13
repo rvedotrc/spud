@@ -21,6 +21,24 @@ EOF
     expect(result.output).to eq("arg=a cat\narg=a big dog\n")
   end
 
+  it "receives /dev/null on stdin" do
+    tmpscript = Tempfile.new('spud-rspec')
+    tmpscript.puts <<'EOF'
+#!/usr/bin/env ruby
+myin = $stdin.stat
+null = File.stat("/dev/null")
+exit 0 if myin == null
+$stderr.puts myin:myin, null:null
+exit 1
+EOF
+    tmpscript.flush
+    tmpscript.chmod 0755
+
+    result = Spud::ScriptRunner.new(
+      cmd: tmpscript.path,
+    ).run!
+  end
+
   it "raises an exception if the command fails" do
     expect {
       Spud::ScriptRunner.new(
