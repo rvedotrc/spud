@@ -12,7 +12,7 @@ module Spud
     end
 
     def run!
-      # stdin is tty
+      # stdin is /dev/null
       # stdout is captured
       # stderr is tty
       # run, and raise an error if exit non-zero
@@ -23,7 +23,7 @@ module Spud
         tmpfile.unlink
 
         pid = Process.spawn(
-          @cmd, *@args,
+          [ @cmd, @cmd ], *@args,
           in: ["/dev/null"],
           out: tmpfile.fileno,
         )
