@@ -12,8 +12,9 @@ module Spud
     end
 
     def normalise_all
+      n = FileNormaliser.new
       files.each do |f|
-        normalise_file f
+        n.normalise_file f
       end
     end
 
@@ -30,12 +31,19 @@ module Spud
       end.flatten
     end
 
+  end
+
+  class FileNormaliser
+
     def normalise_file(f)
       d = f.data
       d = convert_description(d)
       n = StackNormaliser.new(true).normalise_stack(d)
       n = HashSorter.new.sort_hash n
       f.data = n
+
+      # FIXME the flush is a hack – for when the data doesn't change, but we
+      # want to ensure the file on disk is pretty-formatted.
       f.flush!
     end
 
