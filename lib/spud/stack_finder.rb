@@ -43,7 +43,12 @@ module Spud
         puts "That's not a valid stack name, please try again"
       end
 
+      # FIXME save_name (and then save the config) should probably only happen
+      # right at the end, when the stacks have been successfully pushed to
+      # AWS; and then, do config load/amend/save in as small a window as
+      # possible.
       save_name(type, name)
+
       name
     end
 
