@@ -22,6 +22,7 @@ Gemfile.lock
 bin/*
 lib/**/*.rb
 scripts/default/*
+spec/*.rb
   ])
 
   s.executables = %w[
@@ -29,6 +30,7 @@ scripts/default/*
   ]
 
   # NOTE: if you change these dependencies, also change the Gemfile
+  s.add_development_dependency 'rspec', "~> 3.4"
   s.add_dependency 'aws-sdk', "~> 2.0"
   s.add_dependency 'json', '~> 1.8'
 end

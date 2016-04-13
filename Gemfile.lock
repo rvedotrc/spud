@@ -7,10 +7,24 @@ GEM
       jmespath (~> 1.0)
     aws-sdk-resources (2.2.33)
       aws-sdk-core (= 2.2.33)
+    diff-lcs (1.2.5)
     jmespath (1.2.4)
       json_pure (>= 1.8.1)
     json (1.8.3)
     json_pure (1.8.3)
+    rspec (3.4.0)
+      rspec-core (~> 3.4.0)
+      rspec-expectations (~> 3.4.0)
+      rspec-mocks (~> 3.4.0)
+    rspec-core (3.4.1)
+      rspec-support (~> 3.4.0)
+    rspec-expectations (3.4.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.4.0)
+    rspec-mocks (3.4.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.4.0)
+    rspec-support (3.4.1)
 
 PLATFORMS
   ruby
@@ -18,6 +32,7 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk (~> 2.0)!
   json (~> 1.8)!
+  rspec (~> 3.4)!
 
 BUNDLED WITH
    1.11.2
