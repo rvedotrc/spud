@@ -3,11 +3,17 @@
 require 'json'
 require 'aws-sdk'
 
+def get_proxy
+  e = ENV['https_proxy']
+  e = "https://#{e}" if e && !e.empty? && !e.start_with?('http')
+  return e
+end
+
 spec = JSON.parse($stdin.read)
 puts "default retrieve-stacks run with argv = #{spec["argv"].inspect}"
 
 config = {}
-# FIXME http proxy
+config[:proxy_uri] = get_proxy
 cfn_client = Aws::CloudFormation::Client.new(config)
 
 # FIXME could use concurrency - both to do each stack type, and to do

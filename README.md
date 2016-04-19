@@ -125,7 +125,7 @@ To see what it does so far:
 
  * ```gem build spud.gemspec && gem install spud*.gem```
  * ensure your environment contains your AWS credentials if required
- * ensure you can access AWS without using a proxy (sorry, no proxy support yet)
+ * set $https_proxy if required
  * `mkdir -p src/test`
  * copy some stack template to `src/test/template.json`
  * `spud prepare`
