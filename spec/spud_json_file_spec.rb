@@ -4,6 +4,14 @@ describe Spud::JsonFile do
 
   A_PATH = "some-file.json"
 
+  def normalised_form_of(data)
+    JSON.pretty_generate(data) + "\n"
+  end
+
+  def squished_form_of(data)
+    JSON.generate(data)
+  end
+
   def verify_and_reset(*mocks)
     mocks.each {|mock| RSpec::Mocks.space.proxy_for(mock).verify}
     mocks.each {|mock| RSpec::Mocks.space.proxy_for(mock).reset}
@@ -39,7 +47,7 @@ describe Spud::JsonFile do
 
   it "supports dirty? and discard!" do
     t = Spud::JsonFile.new(A_PATH)
-    expect(IO).to receive(:read).exactly(2).with(A_PATH).and_return('[1,2,3]')
+    expect(IO).to receive(:read).exactly(2).with(A_PATH).and_return(normalised_form_of([1,2,3]))
     expect(t.data).to eq([1,2,3])
     expect(t.dirty?).to be_falsy
 
@@ -104,6 +112,20 @@ describe Spud::JsonFile do
     expect(FileUtils).to receive(:rm_f).with(A_PATH)
     t.delete!
     expect(t.loaded?).to be_falsy
+  end
+
+  it "loads as clean if formatted correctly" do
+    expect(IO).to receive(:read).with(A_PATH).and_return(normalised_form_of([1,2,3]))
+    t = Spud::JsonFile.new(A_PATH)
+    t.data
+    expect(t.dirty?).to be_falsy
+  end
+
+  it "loads as dirty if not formatted correctly" do
+    expect(IO).to receive(:read).with(A_PATH).and_return(squished_form_of([1,2,3]))
+    t = Spud::JsonFile.new(A_PATH)
+    t.data
+    expect(t.dirty?).to be_truthy
   end
 
 end

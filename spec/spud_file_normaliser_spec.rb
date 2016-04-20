@@ -38,16 +38,13 @@ describe Spud::FileNormaliser do
 
   def run(data_in)
     data_out = nil
-    flushed_data = nil
 
     tmp_file = double("a tmp file")
     expect(tmp_file).to receive(:data).and_return(data_in)
     expect(tmp_file).to receive(:data=) {|x| data_out = x}
-    expect(tmp_file).to receive(:flush!) { flushed_data = data_out }
     Spud::FileNormaliser.new.normalise_file(tmp_file)
 
-    expect(flushed_data).to eq(data_out)
-    flushed_data
+    data_out
   end
 
   def it_normalises(data_in)
@@ -63,7 +60,7 @@ describe Spud::FileNormaliser do
     expect(data_out.keys).to eq(%w[ another some ])
   end
 
-  it "reads, assigns and flushes the data" do
+  it "reads, assigns the data" do
     run a_template
   end
 

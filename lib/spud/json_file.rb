@@ -19,6 +19,7 @@ module Spud
 
     def discard!
       @data = @clean_data = nil
+      @dirty = false
     end
 
     def loaded?
@@ -26,13 +27,15 @@ module Spud
     end
 
     def dirty?
-      @data != @clean_data
+      @dirty or @data != @clean_data
     end
 
     def data
       if @data.nil?
-        @clean_data = read_file
+        content = IO.read path
+        @clean_data = JSON.parse content
         @data = Spud.deep_copy @clean_data
+        @dirty = (content != format)
       end
       @data
     end
@@ -49,6 +52,7 @@ module Spud
       @data or raise "No data to write"
       write_file
       @clean_data = Spud.deep_copy @data
+      @dirty = false
     end
 
     private
@@ -60,8 +64,12 @@ module Spud
     def write_file
       @data or raise "No data to write"
       tmp = path + ".tmp"
-      IO.write(tmp, JSON.pretty_generate(@data)+"\n")
+      IO.write(tmp, format)
       File.rename tmp, path
+    end
+
+    def format
+      JSON.pretty_generate(@data)+"\n"
     end
 
   end

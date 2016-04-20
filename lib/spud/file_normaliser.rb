@@ -8,10 +8,6 @@ module Spud
       n = StackNormaliser.new(true).normalise_stack(d)
       n = HashSorter.new.sort_hash n
       f.data = n
-
-      # FIXME the flush is a hack – for when the data doesn't change, but we
-      # want to ensure the file on disk is pretty-formatted.
-      f.flush!
     end
 
     # Eww. Doesn't really belong here?
