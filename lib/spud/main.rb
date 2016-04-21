@@ -21,6 +21,8 @@ module Spud
         show_help
       when "prepare"
         Prepare.new(context).run
+      when "apply"
+        Apply.new(context).run
       else
         $stderr.puts "Unknown invocation #{verb.inspect}"
         show_help
