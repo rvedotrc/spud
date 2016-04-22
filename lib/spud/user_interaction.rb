@@ -40,6 +40,10 @@ module Spud
       answer.match /^\s*y/i
     end
 
+    def self.info_press_return(message)
+      Readline.readline "#{message} [press return]: "
+    end
+
   end
 
 end

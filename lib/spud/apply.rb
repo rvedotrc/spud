@@ -21,14 +21,10 @@ module Spud
 
       @tmp_files = TmpFiles.new(@context)
 
-      unless checks_ok?
-        NormaliserRunner.new(context, tmp_files).normalise([ :next_description, :next_template ])
-        tmp_files.flush
-        exit 3
-      end
-
+      ok = checks_ok?
       NormaliserRunner.new(context, tmp_files).normalise([ :next_description, :next_template ])
       tmp_files.flush
+      ok or exit 3
 
       update_or_create
     end
@@ -40,13 +36,8 @@ module Spud
 
     def update_or_create
       context.stack_types.each do |stack_type|
-        update_or_create_one(stack_type)
+        Updater.new(context, tmp_files, stack_type).run
       end
-    end
-
-    def update_or_create_one(stack_type)
-      # FIXME some way of handling creation
-      puts "FIXME update_or_create_one #{stack_type}"
     end
 
   end

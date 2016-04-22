@@ -74,4 +74,10 @@ describe Spud::UserInteraction do
     test_confirm :confirm_default_no, "[y/N]", "foo", false
   end
 
+  it "does info_press_return" do
+    m = "This is important"
+    expect(Readline).to receive(:readline).with("#{m} [press return]: ")
+    Spud::UserInteraction.info_press_return(m)
+  end
+
 end
