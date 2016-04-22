@@ -23,12 +23,20 @@ module Spud
 
       @tmp_files = TmpFiles.new(@context)
 
-      if !ParameterCheckerOld.new(context, tmp_files).check?
+      unless checks_ok?
+        NormaliserRunner.new(context, tmp_files).normalise([ :next_description, :next_template ])
         tmp_files.flush
         exit 3
       end
 
+      NormaliserRunner.new(context, tmp_files).normalise([ :next_description, :next_template ])
+      tmp_files.flush
+
       update_or_create
+    end
+
+    def checks_ok?
+      ParameterCheckerOld.new(context, tmp_files).check?
     end
 
     def update_or_create

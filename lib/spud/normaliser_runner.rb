@@ -9,23 +9,20 @@ module Spud
       @tmp_files = tmp_files
     end
 
-    def normalise_all
+    def normalise(stages)
       n = FileNormaliser.new
-      files.each do |f|
+      files(stages).each do |f|
         n.normalise_file f
       end
     end
 
     private
 
-    def files
+    def files(stages)
       context.stack_types.map do |t|
-        [
-          tmp_files.get(:current_template, t),
-          tmp_files.get(:current_description, t),
-          tmp_files.get(:generated_template, t),
-          # tmp_files.get(:generated_description, t),
-        ]
+        stages.map do |stage|
+          tmp_files.get(stage, t)
+        end
       end.flatten
     end
 

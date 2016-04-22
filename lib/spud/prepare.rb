@@ -39,7 +39,11 @@ module Spud
       puts ""
 
       puts "Normalising"
-      NormaliserRunner.new(context, tmp_files).normalise_all
+      NormaliserRunner.new(context, tmp_files).normalise([
+        :current_template,
+        :current_description,
+        :generated_template,
+      ])
       tmp_files.copy_current_to_next
 
       comparison = StackComparer.new(context, tmp_files).compare
