@@ -1,5 +1,3 @@
-require 'shellwords'
-
 module Spud
 
   class Apply
