@@ -26,6 +26,20 @@ module Spud
       answer
     end
 
+    def self.confirm_default_no(opts)
+      prompt = opts[:question] + " [y/N]"
+      answer = Readline.readline "#{prompt}: "
+      answer = "n" unless answer.match /\S/
+      answer.match /^\s*y/i
+    end
+
+    def self.confirm_default_yes(opts)
+      prompt = opts[:question] + " [Y/n]"
+      answer = Readline.readline "#{prompt}: "
+      answer = "y" unless answer.match /\S/
+      answer.match /^\s*y/i
+    end
+
   end
 
 end

@@ -1,5 +1,6 @@
 require_relative 'spud/main'
 require_relative 'spud/apply'
+require_relative 'spud/capability_checker'
 require_relative 'spud/context'
 require_relative 'spud/cloudformation_limits'
 require_relative 'spud/data_utils'

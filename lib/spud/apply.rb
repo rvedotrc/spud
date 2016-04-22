@@ -36,7 +36,8 @@ module Spud
     end
 
     def checks_ok?
-      ParameterCheckerOld.new(context, tmp_files).check?
+      ParameterCheckerOld.new(context, tmp_files).check? \
+        and CapabilityChecker.new(context, tmp_files).check?
     end
 
     def update_or_create

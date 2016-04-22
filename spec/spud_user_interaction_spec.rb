@@ -2,6 +2,17 @@ require 'spud'
 
 describe Spud::UserInteraction do
 
+  def test_confirm(method, suffix, user_input, expected_result)
+    expect(Readline).to receive(:readline).with("QQQ? #{suffix}: ") { user_input }
+
+    answer = Spud::UserInteraction.send(
+      method,
+      question: "QQQ?",
+    )
+    expect(answer).to be_truthy if expected_result
+    expect(answer).to be_falsy if !expected_result
+  end
+
   it "should get answer from readline" do
     expect(Readline).to receive(:readline).with("QQQ: ") { "42" }
 
@@ -30,4 +41,37 @@ describe Spud::UserInteraction do
     )
     expect(answer).to eq("42")
   end
+
+  it "confirm_default_yes y" do
+    test_confirm :confirm_default_yes, "[Y/n]", "y", true
+  end
+
+  it "confirm_default_yes return" do
+    test_confirm :confirm_default_yes, "[Y/n]", "", true
+  end
+
+  it "confirm_default_yes n" do
+    test_confirm :confirm_default_yes, "[Y/n]", "n", false
+  end
+
+  it "confirm_default_yes other" do
+    test_confirm :confirm_default_yes, "[Y/n]", "foo", false
+  end
+
+  it "confirm_default_no y" do
+    test_confirm :confirm_default_no, "[y/N]", "y", true
+  end
+
+  it "confirm_default_no return" do
+    test_confirm :confirm_default_no, "[y/N]", "", false
+  end
+
+  it "confirm_default_no n" do
+    test_confirm :confirm_default_no, "[y/N]", "n", false
+  end
+
+  it "confirm_default_no other" do
+    test_confirm :confirm_default_no, "[y/N]", "foo", false
+  end
+
 end
