@@ -2,3 +2,4 @@ src
 tmp
 stack_names.json
 scripts/modav
+*.gem
