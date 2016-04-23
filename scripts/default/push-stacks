@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'aws-sdk'
+
+def get_proxy
+  e = ENV['https_proxy']
+  e = "https://#{e}" if e && !e.empty? && !e.start_with?('http')
+  return e
+end
+
+spec = JSON.parse($stdin.read)
+puts "default push-stacks run with argv = #{spec["argv"].inspect}"
+
+config = {}
+config[:http_proxy] = get_proxy
+cfn_client = Aws::CloudFormation::Client.new(config)
+
+spec["stacks"].entries.sort_by(&:first).each do |type, details|
+  stack_name = details["name"]
+  puts "Pushing stack #{stack_name.inspect}"
+
+  description = JSON.parse(IO.read details["description"])
+  description = description["Stacks"][0]
+
+  # Reduce whitespace
+  template = JSON.generate(JSON.parse(IO.read details["template"]))
+
+  start = Time.now
+
+  r = cfn_client.update_stack(
+    stack_name: stack_name,
+    template_body: template,
+    parameters: description["Parameters"].map do |param|
+      {
+        parameter_key: param["ParameterKey"],
+        parameter_value: param["ParameterValue"],
+      }
+    end,
+    capabilities: description["Capabilities"],
+    notification_arns: description["NotificationARNs"],
+    tags: description["Tags"],
+  )
+  puts ""
+
+  begin
+    # Supplied by https://github.com/rvedotrc/cloudsaw
+    since = (start - 60).utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+    pid = Process.spawn("cfn-events", "-w", "--since=#{since}", r.stack_id)
+    Process.wait pid
+  rescue Errno::ENOENT
+    puts "To watch stack events, please install cloudsaw <https://github.com/rvedotrc/cloudsaw>"
+  end
+end

@@ -35,6 +35,7 @@ module Spud
     end
 
     def update_or_create
+      puts ""
       context.stack_types.each do |stack_type|
         Updater.new(context, tmp_files, stack_type).run
       end

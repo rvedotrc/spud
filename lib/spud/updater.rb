@@ -89,7 +89,25 @@ module Spud
     end
 
     def do_update
-      puts "TODO, apply the update!"
+      # The interface to "push-stacks" takes the usual hash of stacks by stack
+      # type.  Even though in practice we only call it one stack at a time.
+      spec = {
+        argv: context.argv,
+        stacks: [stack_type].each_with_object({}) do |t, h|
+          h[t] = {
+            name: stack_name,
+            template: next_template.path,
+            description: next_description.path,
+          }
+        end,
+      }
+
+      # spud can provide a default implementation (but it can know nothing about
+      # credentials, other than what's already in the environment).
+      JsonSpecScriptRunner.new(
+        cmd: File.join(context.scripts_dir, "push-stacks"),
+        spec: spec,
+      ).run!
     end
 
   end
