@@ -13,7 +13,7 @@ spec = JSON.parse($stdin.read)
 puts "default retrieve-stacks run with argv = #{spec["argv"].inspect}"
 
 config = {}
-config[:proxy_uri] = get_proxy
+config[:http_proxy] = get_proxy
 cfn_client = Aws::CloudFormation::Client.new(config)
 
 # FIXME could use concurrency - both to do each stack type, and to do
