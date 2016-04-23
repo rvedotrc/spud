@@ -4,7 +4,7 @@ spud
 What is it?
 -----------
 
-A semi-interactive tool for helping to create and update AWS Cloudformation
+A semi-interactive tool for helping to create and update AWS CloudFormation
 stacks.
 
 Some background
@@ -26,20 +26,31 @@ Given the following files:
  * `./src/blue/template.default.json`
  * `./src/green/template.default.json`
 
-which are AWS Cloudformation template files, then running `spud prepare` (with
+which are AWS CloudFormation template files, then running `spud prepare` (with
 appropriate AWS credentials) will:
 
  * ask you for the name of the "blue" and "green" stacks
- * retrieve the "blue" and "green" stacks from AWS Cloudformation
+ * retrieve the "blue" and "green" stacks from AWS CloudFormation
  * generate the desired "blue" and "green" stack templates (which just means copying the above files)
  * show you a summary of how the retrieved stacks compare to the generated stacks
  * leave some JSON files in `./tmp/templates/*.json`
- * prompt you to edit the "generated" files, then apply the changes using `spud apply`
+ * prompt you to edit the "next" files, then apply the changes using `spud apply`
 
 In the above example, "blue" and "green" are said to be the _stack types_.
 The stack types are discovered by listing the `./src` directory.  Each stack
 type corresponds to one stack.  You need to have at least one stack type,
 otherwise `spud` will have no work to do.
+
+After making any edits to the "next" files in `./tmp/templates`, running `spud
+apply` will:
+
+ * check the stack parameters, warning you about added or removed parameters,
+   or parameters which don't yet have a value
+ * for each stack,
+   * if there's a change to make,
+     * shows a preview of the changes
+     * asks for confirmation that the changes should be applied to AWS CloudFormation
+     * (if confirmed) applies the changes
 
 Extending spud
 --------------
@@ -61,7 +72,7 @@ status 0.
 
 __The `retrieve-stacks` script__
 
-Used to retrieve the existing stacks, if any, from AWS Cloudformation.  The
+Used to retrieve the existing stacks, if any, from AWS CloudFormation.  The
 default script is probably perfectly good enough for you, unless you want to
 switch regions or accounts (in which case, see below).
 
@@ -116,19 +127,62 @@ The default implementation of `generate-stacks` just copies the stack template
 from the `./src` directory.  This may be sufficient for you - as long as you
 make sure the template(s) are generated and in place before you run `spud`.
 
-Development status
-------------------
+__The `push-stacks` script__
 
-Definitely not finished!
+Much like `retrieve-stacks`, `push-stacks` gets its work as JSON on stdin,
+and doesn't use stdout, stderr, and ARGV.
 
-To see what it does so far:
+`push-stacks` should update the stacks in AWS CloudFormation according to the
+given description and template.
+
+The default implementation of `push-stacks` calls AWS CloudFormation to update
+the stack; then, it uses `cfn-events` (if available) to show stack events and
+wait for the update to complete.  `cfn-events` is available from
+<https://github.com/rvedotrc/cloudsaw/>.
+
+If you want to do things like switch AWS regions or credentials, you could
+override `push-stacks` with your own script which does those things, then
+runs the default `push-stacks` via $SPUD_DEFAULT_SCRIPTS_DIR.
+
+Walkthrough
+-----------
+
+Preparation:
 
  * ```gem build spud.gemspec && gem install spud*.gem```
  * ensure your environment contains your AWS credentials if required
- * set $https_proxy if required
+ * ensure your environment contains $https_proxy if required
+
+Updating an existing stack:
+
+ * `mkdir /somewhere/you/want/to/work`
+ * `cd /somewhere/you/want/to/work`
  * `mkdir -p src/test`
  * copy some stack template to `src/test/template.json`
  * `spud prepare`
  * When prompted, enter the name of some stack that already exists in your account
- * `ls -l tmp/templates` and view the files with your favourite diff tool
+ * `spud` now retrieves the existing stack from AWS CloudFormation, generates
+   the target template (just a file copy), and summarises any differences
+ * Make some changes to `./tmp/templates/template-test.next.json` (for example: add a resource)
+   * If you have `vim` installed, you can use the example command that `spud`
+     shows on screen to do the editing
+ * `spud apply`
+ * Review and apply the changes
+
+Development status
+------------------
+
+What it does:
+
+ * Handle updates to existing stacks
+
+What it doesn't yet do, but will:
+
+ * Handle creation of new stacks
+
+What it doesn't do, and probably never will:
+
+ * Handle deletion of stacks
+ * Any knowledge of AWS credentials or regions.  To handle this, override
+   `retrieve-stacks` and `push-stacks`
 
