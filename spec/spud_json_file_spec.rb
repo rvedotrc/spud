@@ -128,4 +128,17 @@ describe Spud::JsonFile do
     expect(t.dirty?).to be_truthy
   end
 
+  it "marks as dirty if keys are reordered" do
+    out_of_order = {"b"=>2,"a"=>1}
+    in_order = {"a"=>1,"b"=>2}
+    expect(out_of_order).to eq(in_order)
+
+    expect(IO).to receive(:read).with(A_PATH).and_return(normalised_form_of(out_of_order))
+    t = Spud::JsonFile.new(A_PATH)
+    t.data
+    expect(t.dirty?).to be_falsy
+    t.data = in_order
+    expect(t.dirty?).to be_truthy
+  end
+
 end
