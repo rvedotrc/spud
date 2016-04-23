@@ -39,7 +39,12 @@ spec["stacks"].entries.sort_by(&:first).each do |type, details|
     end,
     capabilities: description["Capabilities"],
     notification_arns: description["NotificationARNs"],
-    tags: description["Tags"],
+    tags: description["Tags"].map do |tag|
+      {
+        key: tag["Key"],
+        value: tag["Value"],
+      }
+    end,
   )
   puts ""
 
