@@ -28,7 +28,7 @@ module Spud
         end,
       }
 
-      # s-f can provide a default implementation (but it can know nothing about
+      # spud can provide a default implementation (but it can know nothing about
       # credentials, other than what's already in the environment).
       JsonSpecScriptRunner.new(
         cmd: File.join(context.scripts_dir, "generate-stacks"),
