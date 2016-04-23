@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   EOF
   s.homepage    = 'http://rve.org.uk/gems/spud'
   s.authors     = ['Rachel Evans']
-  s.email       = 'rachel.evans@bbc.co.uk'
+  s.email       = 'git@rve.org.uk'
   s.license     = 'Apache-2.0'
   s.require_paths = ["lib"]
 
