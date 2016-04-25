@@ -13,7 +13,6 @@ module Spud
 
     def initialize
       @scripts_dir = File.expand_path("../../scripts/default", File.dirname(__FILE__))
-      # FIXME find a cleaner solution
       ENV["SPUD_DEFAULT_SCRIPTS_DIR"] = @scripts_dir
       @tmp_dir = File.join "tmp", "templates"
       @config_set = "default"

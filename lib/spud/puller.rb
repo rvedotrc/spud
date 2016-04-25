@@ -41,10 +41,6 @@ module Spud
       # stack doesn't yet exist? How do we represent that in our state (in the
       # tmp dir)?
 
-      # FIXME what is the expected format of the description file?
-      # e.g. stack_name vs StackName; include the Stacks [ ... ] wrapper or
-      # not?
-
       files = context.stack_types.map do |t|
         [
           tmp_files.get(:current_template, t),
