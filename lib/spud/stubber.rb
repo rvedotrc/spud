@@ -19,7 +19,11 @@ module Spud
       }
     end
 
-    def self.is_stub?(d)
+    def self.is_stub_template?(d)
+      d["Resources"].nil? or d["Resources"].empty?
+    end
+
+    def self.is_stub_description?(d)
       d["Stacks"][0]["StackId"].nil?
     end
 
