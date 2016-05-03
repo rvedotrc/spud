@@ -19,6 +19,10 @@ module Spud
       }
     end
 
+    def self.is_stub?(d)
+      d["Stacks"][0]["StackId"].nil?
+    end
+
   end
 
 end

@@ -16,10 +16,12 @@ describe Spud::Stubber do
     data = Spud::Stubber.make_description("foo")
     t = Spud::StackNormaliser.new.normalise_stack(data)
     expect(t["Stacks"][0]["StackName"]).to eq("foo")
-    # Lack of a StackId is what marks this as a stub
-    expect(t["Stacks"][0].has_key? "StackId").to be_falsy
     expect(t["Stacks"][0]["Parameters"]).to eq([])
     expect(t["Stacks"][0]["Tags"]).to eq([])
+
+    expect(Spud::Stubber.is_stub?(t)).to be_truthy
+    t["Stacks"][0]["StackId"] = "something"
+    expect(Spud::Stubber.is_stub?(t)).to be_falsy
   end
 
 end
