@@ -17,19 +17,29 @@ config[:http_proxy] = get_proxy
 cfn_client = Aws::CloudFormation::Client.new(config)
 
 spec["stacks"].entries.sort_by(&:first).each do |type, details|
-  stack_name = details["name"]
-  puts "Pushing stack #{stack_name.inspect}"
-
   description = JSON.parse(IO.read details["description"])
   description = description["Stacks"][0]
 
   # Reduce whitespace
   template = JSON.generate(JSON.parse(IO.read details["template"]))
 
+  stack_name = description["StackName"]
+  puts "Pushing stack #{stack_name.inspect}"
+
   start = Time.now
 
-  r = cfn_client.update_stack(
-    stack_name: stack_name,
+  method = stack_name_or_id = nil
+  if description["StackId"]
+    method = :update_stack
+    stack_name_or_id = description["StackId"]
+  else
+    method = :create_stack
+    stack_name_or_id = stack_name
+  end
+
+  r = cfn_client.send(
+    method,
+    stack_name: stack_name_or_id,
     template_body: template,
     parameters: description["Parameters"].map do |param|
       {
