@@ -18,6 +18,18 @@ rewrite before being opened up to the world.  So this is that rewrite.
 For now at least, during development, it is called `spud` instead of
 `stack-fetcher`.
 
+Installation
+------------
+
+You'll need a working modern Ruby, and bundler.
+
+```
+    bundle install
+    rspec
+    gem build spud.gemspec
+    gem install *.gem
+```
+
 Basic usage example
 -------------------
 
