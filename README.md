@@ -221,6 +221,21 @@ What it does:
  * Handle creation of new stacks
  * Handle updates to existing stacks
 
+Changes I'm considering:
+
+ * Delegate finding the list of stack types to an external script
+   * This would allow much more easily for cases where an entire stack is not
+     required in some contexts (e.g. a "test support" stack is not required in live)
+   * Default implementation: effectively `ls src/`
+ * Delegate the current function of the ```stack_names.json``` file to an
+   external script
+   * This would allow the site-local usage to be as simple or complex as
+     required, e.g. store information about how to acquire credentials / how
+     to select the region for each stack type
+   * This would render the ```--config-set=KEY``` option redundant
+   * Default implementation: exactly as ```stack_names.json``` currently is in
+     the core
+
 What it doesn't do, and probably never will:
 
  * Handle deletion of stacks
