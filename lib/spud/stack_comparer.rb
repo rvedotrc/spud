@@ -33,6 +33,8 @@ module Spud
 
       if x == y
         { result: :same }
+      elsif Stubber.is_stub_template?(x)
+        { result: :new }
       elsif strip_parameter_defaults(x) == strip_parameter_defaults(y)
         { result: :same_except_parameter_defaults }
       else
@@ -84,6 +86,8 @@ module Spud
         text = case r[:result]
                when :same
                  "same"
+               when :new
+                 "NEW"
                when :same_except_parameter_defaults
                  "same, except for parameter defaults"
                when :different
