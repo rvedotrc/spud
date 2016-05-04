@@ -14,6 +14,7 @@ module Spud
     def get_all
       run_script
       check_results
+      add_stubs
     end
 
     def run_script
@@ -37,10 +38,6 @@ module Spud
     end
 
     def check_results
-      # FIXME what is the required behaviour (of the external script) if the
-      # stack doesn't yet exist? How do we represent that in our state (in the
-      # tmp dir)?
-
       files = context.stack_types.map do |t|
         [
           tmp_files.get(:current_template, t),
@@ -65,6 +62,26 @@ module Spud
           exit 1
         rescue Exception => e
           $stderr.puts "Error: retrieve-stacks script ran, but there was an error checking #{f}: #{e}"
+          exit 1
+        end
+      end
+    end
+
+    def add_stubs
+      context.stack_types.map do |stack_type|
+        t = tmp_files.get(:current_template, stack_type)
+        d = tmp_files.get(:current_description, stack_type)
+
+        # retrieve-stacks should write '{}' to both files if the stack does
+        # not yet exist.
+
+        if t.data.empty? and d.data.empty?
+          # New stack: create stubs
+          stack_name = context.stack_names[stack_type]
+          t.data = Spud::Stubber.make_template
+          d.data = Spud::Stubber.make_description(stack_name)
+        elsif t.data.empty? != d.data.empty?
+          $stderr.puts "Error: retrieve-stacks created partially-empty results for the #{stack_type} stack"
           exit 1
         end
       end
