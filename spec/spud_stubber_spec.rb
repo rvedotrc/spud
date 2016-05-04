@@ -9,7 +9,7 @@ describe Spud::Stubber do
     # Interestingly, the StackNormaliser normalises empty things to gone in
     # templates, but to empty arrays in descriptions.  Seems inconsistent.
     expect(t["Parameters"]).to eq(nil)
-    expect(t["Resources"]).to eq(nil)
+    expect(t["Resources"]).to eq({})
 
     expect(Spud::Stubber.is_stub_template?(t)).to be_truthy
     t["Resources"] = {"MyQueue" => {}}

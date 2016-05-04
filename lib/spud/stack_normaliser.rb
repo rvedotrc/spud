@@ -48,7 +48,7 @@ module Spud
         r["Properties"] = normalise_resource_properties(r["Type"], r["Properties"]) if r.has_key? "Properties"
       end
 
-      %w[ Parameters Outputs Mappings Conditions Resources Properties ].each do |k|
+      %w[ Parameters Outputs Mappings Conditions Properties ].each do |k|
         d.delete k if d.has_key? k and d[k].empty?
       end
 
