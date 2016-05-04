@@ -27,6 +27,29 @@ module Spud
         return
       end
 
+      if Stubber.is_stub_description?(current_description.data)
+        prompted_create
+      else
+        prompted_update
+      end
+    end
+
+    def prompted_create
+      puts "The #{stack_type} stack #{stack_name} is NEW"
+      puts ""
+
+      show_parameter_overrides
+
+      unless UserInteraction.confirm_default_no(question: "Create the #{stack_type} stack #{stack_name}?")
+        puts ""
+        return
+      end
+
+      do_update
+      puts ""
+    end
+
+    def prompted_update
       puts "Updates about to be applied to the #{stack_type} stack #{stack_name}:"
       puts ""
       show_diffs
@@ -95,7 +118,6 @@ module Spud
         argv: context.argv,
         stacks: [stack_type].each_with_object({}) do |t, h|
           h[t] = {
-            name: stack_name,
             template: next_template.path,
             description: next_description.path,
           }
