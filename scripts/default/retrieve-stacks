@@ -22,11 +22,22 @@ spec["stacks"].entries.sort_by(&:first).each do |type, details|
   stack_name = details["name"]
   puts "Retrieving stack #{stack_name.inspect}"
 
-  template = description = nil
+  description_content = template_content = nil
 
-  d_resp = cfn_client.describe_stacks(stack_name: stack_name)
-  t_resp = cfn_client.get_template(stack_name: stack_name)
+  begin
+    d_resp = cfn_client.describe_stacks(stack_name: stack_name)
+    t_resp = cfn_client.get_template(stack_name: stack_name)
+    description_content = JSON.generate(d_resp.to_h)
+    template_content = t_resp.template_body
+  rescue Aws::CloudFormation::Errors::ValidationError => e
+    # Eww!
+    if e.to_s.match /Stack with id \S+ does not exist/
+      description_content = template_content = '{}'
+    else
+      raise
+    end
+  end
 
-  IO.write(details["description"], JSON.generate(d_resp.to_h))
-  IO.write(details["template"], t_resp.template_body)
+  IO.write(details["description"], description_content)
+  IO.write(details["template"], template_content)
 end
