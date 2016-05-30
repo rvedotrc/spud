@@ -79,7 +79,7 @@ module Spud
     def show_parameter_overrides
       d = next_description.data
       t = next_template.data
-      show_param_overrides(t["Parameters"], params_to_hash(d))
+      show_param_overrides(t["Parameters"] || {}, params_to_hash(d))
     end
 
     def params_to_hash(description_data)
