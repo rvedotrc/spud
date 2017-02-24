@@ -10,7 +10,7 @@ def get_proxy
 end
 
 spec = JSON.parse($stdin.read)
-puts "default push-stacks run with argv = #{spec["argv"].inspect}"
+puts "default push-stacks run with argv = #{spec["args"].inspect}"
 
 config = {}
 config[:http_proxy] = get_proxy
@@ -34,8 +34,9 @@ spec["stacks"].entries.sort_by(&:first).each do |type, details|
     stack_name_or_id = description["StackId"]
   else
     method = :create_stack
-    stack_name_or_id = stack_name
+    stack_name_or_id = stack_name["stack_name"]
   end
+  puts "using #{method} and #{stack_name_or_id}"
 
   r = cfn_client.send(
     method,
