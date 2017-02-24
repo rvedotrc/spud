@@ -6,16 +6,18 @@ module Spud
 
     attr_reader :context
 
-    def initialize(argv)
-      @context = Context.new
+    def initialize(argv, context = nil)
+      @context = context || Context.new
       @context.argv = argv.dup
     end
 
     def run
+      puts "main context (a): #{@context}"
       read_options
 
       verb = context.argv.shift
 
+      puts "main context (b): #{@context}"
       case verb
       when nil, "help"
         show_help
