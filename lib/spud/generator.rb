@@ -24,8 +24,8 @@ module Spud
           name: stack.name,
           region: stack.region,
           account_alias: stack.account_alias,
-          template: tmp_files.get(:current_template, type).path,
-          description: tmp_files.get(:current_description, type).path,
+          template: tmp_files.get(:generated_template, type).path,
+          description: tmp_files.get(:generated_template, type).path,
         }
         memo
       end
