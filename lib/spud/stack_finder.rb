@@ -4,14 +4,12 @@ module Spud
 
   class StackFinder
 
-    attr_reader :context
-
     def initialize(context)
       @context = context
     end
 
     def get_names
-      context.stack_types.each_with_object({}) do |type, h|
+      @context.stack_types.each_with_object({}) do |type, h|
         h[type] = get_name(type)
       end
     end
@@ -19,19 +17,22 @@ module Spud
     private
 
     def get_name(type)
+      puts "resolving #{type}"
       saved_name(type) || prompted_name(type)
     end
 
     def saved_name(type)
-      context.config[type]
+      puts "saved name from #{@context.stack_names}"
+      @context.stack_names[type]
     end
 
     def save_name(type, name)
-      context.config[type] = name
+      @context.stack_names = {type => name}
     end
 
     def prompted_name(type)
       suggestion = get_suggestion(type)
+      puts "suggestion is #{suggestion}"
 
       name = nil
       loop do
@@ -53,10 +54,7 @@ module Spud
     end
 
     def get_suggestion(type)
-      name = ScriptRunner.new(
-        cmd: File.join(context.scripts_dir, "get-stack-name-suggestion"),
-        args: [ type ] + context.argv,
-      ).run!.output.chomp
+      name = @context.extensions.stack_name_suggester.suggest_name(@context, type)
 
       if CloudformationLimits.valid_stack_name? name
         name
@@ -71,3 +69,5 @@ module Spud
   end
 
 end
+
+# vi: ts=2 sts=2 sw=2 et

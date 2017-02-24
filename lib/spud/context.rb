@@ -22,12 +22,12 @@ module Spud
 
   class Extensions
     attr_accessor :puller
-#    attr_accessor :generator
-#    attr_accessor :stack_name_suggester
+    attr_accessor :generator
+    attr_accessor :stack_name_suggester
     def initialize()
       @puller = DefaultPuller.new
-#      @generator = DefaultGenerator.new
-#      @stack_name_suggester = DefaultStackNameSuggester.new
+      @generator = DefaultGenerator.new
+      @stack_name_suggester = DefaultStackNameSuggester.new
     end
   end
 
