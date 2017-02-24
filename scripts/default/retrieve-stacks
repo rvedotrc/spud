@@ -1,4 +1,26 @@
 #!/usr/bin/env ruby
+#
+#
+# stdin: json:
+# {
+#   "argv" : [...]
+#   "stacks" : {
+#     "<stack type>" : {
+#       "account_alias": "<AWS account alias or ID>"
+#       "region": "<AWS Region in which the stack (should) reside>"
+#       "name" : "<CloudFormation stack name>"
+#       "template" : "<path to a file into which the stack template should be written>"
+#       "description" : "<path to a file into which the stack description should be written>"
+#     }
+#   }
+# }
+#
+# side effects:
+#   for each stack in stacks, (a) json form of the CF template written to the
+#   file in the "template" field as returned by the get-template function
+#   and (b) stack description json written to the file in the "description"
+#   field as returned by the describe-stack function
+#
 
 require 'json'
 require 'aws-sdk'
@@ -9,21 +31,12 @@ def get_proxy
   return e
 end
 
-spec = JSON.parse($stdin.read)
-puts "default retrieve-stacks run with argv = #{spec["argv"].inspect}"
+def default_content()
+  ['{}', '{}']
+end
 
-config = {}
-config[:http_proxy] = get_proxy
-cfn_client = Aws::CloudFormation::Client.new(config)
-
-# FIXME could use concurrency - both to do each stack type, and to do
-# description + template
-spec["stacks"].entries.sort_by(&:first).each do |type, details|
-  stack_name = details["name"]
-  puts "Retrieving stack #{stack_name.inspect}"
-
-  description_content = template_content = nil
-
+def fetch_stack_content(cfn_client, stack_name)
+  (description_content, template_content) = default_content()
   begin
     d_resp = cfn_client.describe_stacks(stack_name: stack_name)
     t_resp = cfn_client.get_template(stack_name: stack_name)
@@ -32,12 +45,43 @@ spec["stacks"].entries.sort_by(&:first).each do |type, details|
   rescue Aws::CloudFormation::Errors::ValidationError => e
     # Eww!
     if e.to_s.match /Stack with id \S+ does not exist/
-      description_content = template_content = '{}'
+      (description_content, template_content) = default_content
     else
       raise
     end
+  end
+  [description_content, template_content]
+end
+
+spec = JSON.parse($stdin.read)
+puts "default retrieve-stacks run with argv = #{spec["argv"].inspect}"
+puts "spec #{spec}"
+
+config = {}
+config[:http_proxy] = get_proxy
+
+# FIXME could use concurrency - both to do each stack type, and to do
+# description + template
+spec["stacks"].entries.each do |type, details|
+    
+  puts "stack type: #{type}"
+  puts "stack details: #{details}"
+
+  stack = details["name"]
+
+  puts "Retrieving stack #{stack.inspect}"
+
+  config[:region] = details["region"] if details["region"]
+  cfn_client = Aws::CloudFormation::Client.new(config)
+
+  if stack then
+    (description_content, template_content) = fetch_stack_content(cfn_client, stack)
+  else
+    (description_content, template_content) = default_content
   end
 
   IO.write(details["description"], description_content)
   IO.write(details["template"], template_content)
 end
+
+# vi: ts=2 sts=2 sw=2 et

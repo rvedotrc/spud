@@ -18,23 +18,20 @@ module Spud
     end
 
     def run_script
-      spec = {
-        argv: context.argv,
-        stacks: context.stack_types.each_with_object({}) do |t, h|
-          h[t] = {
-            name: context.stack_names[t],
-            template: tmp_files.get(:current_template, t).path,
-            description: tmp_files.get(:current_description, t).path,
-          }
-        end,
-      }
+      argv = context.argv
+      stacks = context.stacks.entries.reduce({}) do |memo, (type, stack)|
+        memo[type] = {
+          type: type,
+          name: stack.name,
+          region: stack.region,
+          account_alias: stack.account_alias,
+          template: tmp_files.get(:current_template, type).path,
+          description: tmp_files.get(:current_description, type).path,
+        }
+        memo
+      end
 
-      # spud can provide a default implementation (but it can know nothing about
-      # credentials, other than what's already in the environment).
-      JsonSpecScriptRunner.new(
-        cmd: File.join(context.scripts_dir, "retrieve-stacks"),
-        spec: spec,
-      ).run!
+      context.extensions.puller.fetch_stacks(context, argv, stacks)
     end
 
     def check_results
@@ -90,3 +87,5 @@ module Spud
   end
 
 end
+
+# vi: ts=2 sts=2 sw=2 et :
