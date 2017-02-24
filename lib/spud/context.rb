@@ -111,16 +111,17 @@ module Spud
       @stacks.each do |(k, stack)|
         ret[k] = stack.name
       end
+      puts "resolved stack names: #{ret}"
       ret
     end
 
     def stack_names=(val)
       puts "stack names: #{val}"
       # val = {"<type>" => "<name>", ...}
-      val.each do |(type, name)|
+      val.entries.each do |(type, name)|
         if @stacks[type] then
           s = @stacks[type]
-          @stacks[type] ||= Stack.new(name, type, s.account_alias, s.region)
+          @stacks[type] = Stack.new(name, type, s.account_alias, s.region)
         else
           @stacks[type] = Stack.new(name, type, nil, nil)
         end
