@@ -17,12 +17,10 @@ module Spud
     private
 
     def get_name(type)
-      puts "resolving #{type}"
       saved_name(type) || prompted_name(type)
     end
 
     def saved_name(type)
-      puts "saved name from #{@context.stack_names}"
       @context.stack_names[type]
     end
 

@@ -12,12 +12,10 @@ module Spud
     end
 
     def run
-      puts "main context (a): #{@context}"
       read_options
 
       verb = context.argv.shift
 
-      puts "main context (b): #{@context}"
       case verb
       when nil, "help"
         show_help

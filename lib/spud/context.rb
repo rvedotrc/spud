@@ -43,8 +43,6 @@ module Spud
     attr_reader :stacks
     attr_reader :config_set
     attr_reader :extensions
-#    attr_accessor :stack_types
-#    attr_accessor :stack_names
 
     def initialize
       @scripts_dir = File.expand_path("../../scripts/default", File.dirname(__FILE__))
