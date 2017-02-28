@@ -3,9 +3,9 @@
 require 'json'
 spec = JSON.parse($stdin.read)
 
-puts "default generate-stacks run with argv = #{spec["argv"].inspect}"
+puts "default generate-stacks run with argv = #{spec["args"].inspect}"
 
-env = spec["argv"].last || "default"
+env = spec["args"].last || "default"
 
 spec["stacks"].entries.sort_by(&:first).each do |type, details|
   stack_name = details["name"]

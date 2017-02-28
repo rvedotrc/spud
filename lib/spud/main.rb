@@ -6,8 +6,8 @@ module Spud
 
     attr_reader :context
 
-    def initialize(argv)
-      @context = Context.new
+    def initialize(argv, context = nil)
+      @context = context || Context.new
       @context.argv = argv.dup
     end
 

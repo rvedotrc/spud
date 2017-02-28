@@ -19,7 +19,7 @@ module Spud
       answer = nil
 
       while true
-        answer = Readline.readline "#{prompt}: "
+        answer = Readline.readline("#{prompt}: ", true)
         break if answer.match /\S/
       end
 

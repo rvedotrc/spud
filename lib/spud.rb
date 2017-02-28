@@ -21,3 +21,8 @@ require_relative 'spud/stubber'
 require_relative 'spud/tmp_files'
 require_relative 'spud/updater'
 require_relative 'spud/user_interaction'
+
+require_relative 'spud/ext/default_puller'
+require_relative 'spud/ext/default_generator'
+require_relative 'spud/ext/default_stack_name_suggestion'
+require_relative 'spud/ext/default_pusher'

@@ -27,9 +27,9 @@ module Spud
 
     private
 
-    def compare_template_files(file1, file2)
-      x = file1.data
-      y = file2.data
+    def compare_template_files(current, generated)
+      x = current.data
+      y = generated.data
 
       if x == y
         { result: :same }
@@ -38,7 +38,7 @@ module Spud
       elsif strip_parameter_defaults(x) == strip_parameter_defaults(y)
         { result: :same_except_parameter_defaults }
       else
-        { result: :different }.merge diff_stats(file1, file2)
+        { result: :different }.merge diff_stats(current, generated)
       end
     end
 
