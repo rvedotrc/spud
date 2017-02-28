@@ -30,7 +30,7 @@ module Spud
         memo
       end
 
-      context.extensions.generator.generate(context, argv, stacks)
+      context.extensions.generator.generate(context, stacks)
     end
 
     def check_results
