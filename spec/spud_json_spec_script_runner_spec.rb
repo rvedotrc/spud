@@ -14,6 +14,7 @@ cat > #{Shellwords.shellescape tmpout.path}
 EOF
     tmpscript.flush
     tmpscript.chmod 0755
+    tmpscript.close false
 
     Spud::JsonSpecScriptRunner.new(
       cmd: tmpscript.path,
@@ -36,6 +37,7 @@ echo $# > #{Shellwords.shellescape tmpout.path}
 EOF
     tmpscript.flush
     tmpscript.chmod 0755
+    tmpscript.close false
 
     Spud::JsonSpecScriptRunner.new(
       cmd: tmpscript.path,
@@ -58,6 +60,7 @@ fi
 EOF
     tmpscript.flush
     tmpscript.chmod 0755
+    tmpscript.close false
 
     Spud::JsonSpecScriptRunner.new(
       cmd: tmpscript.path,
