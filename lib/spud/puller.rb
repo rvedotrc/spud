@@ -18,7 +18,6 @@ module Spud
     end
 
     def run_script
-      argv = context.argv
       stacks = context.stacks.entries.reduce({}) do |memo, (type, stack)|
         memo[type] = {
           type: type,
@@ -31,7 +30,7 @@ module Spud
         memo
       end
 
-      context.extensions.puller.fetch_stacks(context, argv, stacks)
+      context.extensions.puller.fetch_stacks(context, stacks)
     end
 
     def check_results

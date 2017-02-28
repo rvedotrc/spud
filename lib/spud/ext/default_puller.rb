@@ -16,9 +16,9 @@ module Spud
     # }
     #
     #
-    def fetch_stacks(context, args, stacks)
+    def fetch_stacks(context, stacks)
       spec = {
-        args: args,
+        args: context.argv,
         stacks: stacks
       }
       JsonSpecScriptRunner.new(
