@@ -12,6 +12,7 @@ done
 EOF
     tmpscript.flush
     tmpscript.chmod 0755
+    tmpscript.close
 
     result = Spud::ScriptRunner.new(
       cmd: tmpscript.path,
@@ -33,6 +34,7 @@ exit 1
 EOF
     tmpscript.flush
     tmpscript.chmod 0755
+    tmpscript.close
 
     result = Spud::ScriptRunner.new(
       cmd: tmpscript.path,
