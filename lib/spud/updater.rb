@@ -118,7 +118,7 @@ module Spud
     def do_update
       stacks = [stack_type].each_with_object({}) do |t, h|
         h[t] = {
-          name: context.stacks[t].stack_name,
+          name: context.stacks[t].name,
           region: context.stacks[t].region,
           account_alias: context.stacks[t].account_alias,
           template: next_template.path,
