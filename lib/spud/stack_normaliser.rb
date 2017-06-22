@@ -25,7 +25,7 @@ module Spud
         d["TemplateBody"] = normalise_template d["TemplateBody"]
         d
       else
-        raise "Unrecognised stack json"
+        raise "Unrecognised stack json: #{d.inspect}"
       end
     end
 
