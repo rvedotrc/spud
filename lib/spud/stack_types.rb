@@ -9,7 +9,10 @@ module Spud
     end
 
     def list
-      Dir.new("src").entries.reject {|s| s.start_with? "."}.sort
+      Dir.new("src").entries
+        .reject {|s| s.start_with? "."}
+        .keep_if {|s| File.directory?("src/#{s}")}
+        .sort
     end
 
   end
