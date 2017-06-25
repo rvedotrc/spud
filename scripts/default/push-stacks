@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+# TODO, describe how this is invoked.
+#
+# In the default implementation, account_alias is ignored.
+
 require 'json'
 require 'aws-sdk'
 
@@ -14,6 +18,7 @@ puts "default push-stacks run with argv = #{spec["args"].inspect}"
 
 config = {}
 config[:http_proxy] = get_proxy
+# FIXME respect region
 cfn_client = Aws::CloudFormation::Client.new(config)
 
 spec["stacks"].entries.sort_by(&:first).each do |type, details|

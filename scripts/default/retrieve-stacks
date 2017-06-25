@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 #
-#
 # stdin: json:
 # {
 #   "argv" : [...]
@@ -21,6 +20,7 @@
 #   and (b) stack description json written to the file in the "description"
 #   field as returned by the describe-stack function
 #
+# In the default implementation, account_alias is ignored.
 
 require 'json'
 require 'aws-sdk'

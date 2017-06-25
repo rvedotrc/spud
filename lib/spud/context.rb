@@ -1,5 +1,6 @@
 module Spud
 
+  # FIXME: untested class
   class Stack
     attr_reader :name, :account_alias, :type, :region
 
@@ -20,6 +21,7 @@ module Spud
     end
   end
 
+  # FIXME: untested class
   class Extensions
     attr_accessor :puller
     attr_accessor :generator
@@ -57,6 +59,7 @@ module Spud
 
     def config_set=(val)
       @config_set = val
+      # FIXME: mostly untested method
       @stacks = {} # "<type>" => Stack object
       puts "config for this run: #{config}"
       config.each do |k, v|
@@ -64,8 +67,10 @@ module Spud
         if v.is_a?(Hash) then
           @stacks[k] = Stack.new(v["stack_name"], k, v["account_alias"], v["region"])
           puts "found a hash - decomposed to #{@stacks[k]}"
-
         else
+          # TODO: what does having an account_alias actually mean? What does
+          # it *do*? What does it mean /not/ to have have one?
+          # TODO ditto for region
           @stacks[k] = Stack.new(v, k, nil, nil)
           puts "found not-a hash - decomposed to #{@stacks[k]}"
         end
@@ -87,12 +92,14 @@ module Spud
       end
     end
 
+    # FIXME: untested
     def stack_types
       @stacks.map do |(k, stack)|
         stack.type
       end
     end
 
+    # FIXME: untested
     def stack_types=(val)
       # val = ["<type>", ...]
       val.each do |type|
@@ -106,6 +113,7 @@ module Spud
       regenerate_config
     end
 
+    # FIXME: untested
     def stack_names
       ret = {}
       @stacks.each do |(k, stack)|
@@ -115,6 +123,7 @@ module Spud
       ret
     end
 
+    # FIXME: untested
     def stack_names=(val)
       puts "stack names: #{val}"
       # val = {"<type>" => "<name>", ...}
@@ -129,6 +138,7 @@ module Spud
       regenerate_config
     end
 
+    # FIXME: untested
     def to_h
       {
         scripts_dir: @scripts_dir,
@@ -143,12 +153,14 @@ module Spud
       }
     end
 
+    # FIXME: untested
     def to_s
       to_h.to_s
     end
 
     private
 
+    # FIXME: untested
     def regenerate_config
       @stacks.entries.each do |(type, stack)|
         puts "entry: #{type}, #{stack.to_h}"
