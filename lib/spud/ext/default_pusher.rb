@@ -12,7 +12,7 @@ module Spud
     # }
     def push_stacks(context, stacks)
       spec = {
-        args: context.args,
+        args: context.argv,
         stacks: stacks
       }
       JsonSpecScriptRunner.new(

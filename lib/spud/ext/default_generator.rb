@@ -14,7 +14,7 @@ module Spud
     # }
     def generate(context, stacks)
       spec = {
-        args: context.args,
+        args: context.argv,
         stacks: stacks
       }
       JsonSpecScriptRunner.new(

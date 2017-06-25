@@ -18,14 +18,14 @@ module Spud
 
     def run_script
       argv = context.argv
-      stacks = context.stacks.entries.reduce({}) do |memo, (type, stack)|
-        memo[type] = {
-          type: type,
+      stacks = context.stacks.reduce({}) do |memo, stack|
+        memo[stack.type] = {
+          type: stack.type,
           name: stack.name,
           region: stack.region,
           account_alias: stack.account_alias,
-          template: tmp_files.get(:generated_template, type).path,
-          description: tmp_files.get(:generated_template, type).path,
+          template: tmp_files.get(:generated_template, stack.type).path,
+          description: tmp_files.get(:generated_template, stack.type).path,
         }
         memo
       end

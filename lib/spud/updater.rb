@@ -116,15 +116,18 @@ module Spud
     end
 
     def do_update
-      stacks = [stack_type].each_with_object({}) do |t, h|
-        h[t] = {
-          name: context.stacks[t].name,
-          region: context.stacks[t].region,
-          account_alias: context.stacks[t].account_alias,
+      stack = context.stacks.find {|stack| stack.type == stack_type}
+
+      stacks = {
+        stack_type => {
+          name: stack.name,
+          region: stack.region,
+          account_alias: stack.account_alias,
           template: next_template.path,
           description: next_description.path,
         }
-      end
+      }
+
       context.extensions.pusher.push_stacks(context, stacks)
     end
 
