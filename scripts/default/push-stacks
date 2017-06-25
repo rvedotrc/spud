@@ -6,11 +6,23 @@
 
 require 'json'
 require 'aws-sdk'
+require 'cfn-events'
 
 def get_proxy
   e = ENV['https_proxy']
   e = "https://#{e}" if e && !e.empty? && !e.start_with?('http')
   return e
+end
+
+def watch_stack_events(stack_id, cfn_client, since)
+  config = CfnEvents::Config.new
+  config.cfn_client = cfn_client
+  config.stack_name_or_id = stack_id
+  config.wait = true
+  config.since = since
+
+  rc = CfnEvents::Runner.new(config).run
+  # FIXME do we care about non-zero return code?
 end
 
 spec = JSON.parse($stdin.read)
@@ -66,12 +78,6 @@ spec["stacks"].entries.sort_by(&:first).each do |type, details|
   )
   puts ""
 
-  begin
-    # Supplied by https://github.com/rvedotrc/cloudsaw
-    since = (start - 60).utc.strftime('%Y-%m-%dT%H:%M:%SZ')
-    pid = Process.spawn("cfn-events", "-w", "--since=#{since}", r.stack_id)
-    Process.wait pid
-  rescue Errno::ENOENT
-    puts "To watch stack events, please install cloudsaw <https://github.com/rvedotrc/cloudsaw>"
-  end
+  watch_stack_events r.stack_id, cfn_client, start - 60
+
 end

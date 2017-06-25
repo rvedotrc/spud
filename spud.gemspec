@@ -33,4 +33,5 @@ spec/*.rb
   s.add_development_dependency 'rspec', "~> 3.4"
   s.add_dependency 'aws-sdk', "~> 2.0"
   s.add_dependency 'json', '~> 1.8'
+  s.add_dependency 'cfn-events', '~> 0.1'
 end
