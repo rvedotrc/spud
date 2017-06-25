@@ -59,4 +59,12 @@ describe Spud::Context do
     expect(data).to eq({ "foo" => { "bar" => { "baz" => true } } })
   end
 
+  it "provides default extensions" do
+    c = Spud::Context.new
+    expect(c.extensions.generator).to respond_to(:generate)
+    expect(c.extensions.puller).to respond_to(:fetch_stacks)
+    expect(c.extensions.stack_name_suggester).to respond_to(:suggest_name)
+    expect(c.extensions.pusher).to respond_to(:push_stacks)
+  end
+
 end

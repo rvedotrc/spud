@@ -21,7 +21,6 @@ module Spud
     end
   end
 
-  # FIXME: untested class
   class Extensions
     attr_accessor :puller
     attr_accessor :generator
