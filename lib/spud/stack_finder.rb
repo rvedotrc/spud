@@ -21,18 +21,6 @@ module Spud
 
     private
 
-    def get_name(type)
-      saved_name(type) || prompted_name(type)
-    end
-
-    def saved_name(type)
-      @context.stack_names[type]
-    end
-
-    def save_name(type, name)
-      @context.stack_names = {type => name}
-    end
-
     def prompted_name(type)
       suggestion = get_suggestion(type)
 

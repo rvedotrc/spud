@@ -114,38 +114,12 @@ module Spud
     end
 
     # FIXME: untested
-    def stack_names
-      ret = {}
-      @stacks.each do |(k, stack)|
-        ret[k] = stack.name
-      end
-      puts "resolved stack names: #{ret}"
-      ret
-    end
-
-    # FIXME: untested
-    def stack_names=(val)
-      puts "stack names: #{val}"
-      # val = {"<type>" => "<name>", ...}
-      val.entries.each do |(type, name)|
-        if @stacks[type] then
-          s = @stacks[type]
-          @stacks[type] = Stack.new(name, type, s.account_alias, s.region)
-        else
-          @stacks[type] = Stack.new(name, type, nil, nil)
-        end
-      end
-      regenerate_config
-    end
-
-    # FIXME: untested
     def to_h
       {
         scripts_dir: @scripts_dir,
         tmp_dir: @tmp_dir,
         config_set: @config_set,
         :stack_types => stack_types,
-        :stack_names => stack_names,
         :argv => argv,
         persisted_config: @persisted_config,
         config: @config,

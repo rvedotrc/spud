@@ -64,20 +64,19 @@ module Spud
     end
 
     def add_stubs
-      context.stack_types.map do |stack_type|
-        t = tmp_files.get(:current_template, stack_type)
-        d = tmp_files.get(:current_description, stack_type)
+      context.stacks.each do |stack|
+        t = tmp_files.get(:current_template, stack.type)
+        d = tmp_files.get(:current_description, stack.type)
 
         # retrieve-stacks should write '{}' to both files if the stack does
         # not yet exist.
 
         if t.data.empty? and d.data.empty?
           # New stack: create stubs
-          stack_name = context.stack_names[stack_type]
           t.data = Spud::Stubber.make_template
-          d.data = Spud::Stubber.make_description(stack_name)
+          d.data = Spud::Stubber.make_description(stack.name)
         elsif t.data.empty? != d.data.empty?
-          $stderr.puts "Error: retrieve-stacks created partially-empty results for the #{stack_type} stack"
+          $stderr.puts "Error: retrieve-stacks created partially-empty results for the #{stack.type} stack"
           exit 1
         end
       end

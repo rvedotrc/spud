@@ -25,7 +25,7 @@ module Spud
       end
 
       puts "Determining stack names"
-      @context.stack_names = StackFinder.new(context).get_names
+      StackFinder.new(@context).get_names
       @tmp_files = TmpFiles.new(@context)
       @tmp_files.clean!
       puts ""
