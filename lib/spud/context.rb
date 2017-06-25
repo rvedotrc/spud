@@ -2,7 +2,8 @@ module Spud
 
   # FIXME: untested class
   class Stack
-    attr_reader :name, :account_alias, :type, :region
+    attr_reader :account_alias, :type, :region
+    attr_accessor :name
 
     def initialize(name, type, account_alias, region)
       @name = name

@@ -9,9 +9,14 @@ module Spud
     end
 
     def get_names
-      @context.stack_types.each_with_object({}) do |type, h|
-        h[type] = get_name(type)
+      stacks = @context.stacks
+      stacks.each do |stack|
+        # FIXME saving the name should probably only happen right at the end,
+        # when the stacks have been successfully pushed to AWS; and then, do
+        # config load/amend/save in as small a window as possible.
+        stack.name ||= prompted_name(stack.type)
       end
+      stacks
     end
 
     private
@@ -30,7 +35,6 @@ module Spud
 
     def prompted_name(type)
       suggestion = get_suggestion(type)
-      puts "suggestion is #{suggestion}"
 
       name = nil
       loop do
@@ -42,18 +46,12 @@ module Spud
         puts "That's not a valid stack name, please try again"
       end
 
-      # FIXME save_name (and then save the config) should probably only happen
-      # right at the end, when the stacks have been successfully pushed to
-      # AWS; and then, do config load/amend/save in as small a window as
-      # possible.
-      save_name(type, name)
-
       name
     end
 
     def get_suggestion(type)
       name = @context.extensions.stack_name_suggester.suggest_name(@context, type)
-
+      
       if CloudformationLimits.valid_stack_name? name
         name
       else
