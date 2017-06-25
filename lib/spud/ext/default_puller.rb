@@ -1,9 +1,7 @@
-
-
 module Spud
+
   class DefaultPuller
 
-    #
     # args: array of args that spud was called with.
     # stacks {
     #     "<stack type>" => {
@@ -14,8 +12,6 @@ module Spud
     #       :description => "<File path into which the stack description should be written>"
     #     }, ...
     # }
-    #
-    #
     def fetch_stacks(context, stacks)
       spec = {
         args: context.argv,
@@ -26,7 +22,9 @@ module Spud
         spec: spec,
       ).run!
     end
+
   end
+
 end
 
 # vi: ts=2 sts=2 sw=2 et :

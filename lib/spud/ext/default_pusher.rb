@@ -1,7 +1,6 @@
 module Spud
   class DefaultPusher
 
-    #
     # stacks {
     #     "<stack type>" => {
     #       :name => "<stack name>",
@@ -11,8 +10,6 @@ module Spud
     #       :description => "<File path from which the stack description should be read>"
     #     }, ...
     # }
-    #
-    #
     def push_stacks(context, stacks)
       spec = {
         args: context.args,
