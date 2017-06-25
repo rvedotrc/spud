@@ -18,8 +18,6 @@ puts "default push-stacks run with argv = #{spec["args"].inspect}"
 
 config = {}
 config[:http_proxy] = get_proxy
-# FIXME respect region
-cfn_client = Aws::CloudFormation::Client.new(config)
 
 spec["stacks"].entries.sort_by(&:first).each do |type, details|
   description = JSON.parse(IO.read details["description"])
@@ -33,15 +31,19 @@ spec["stacks"].entries.sort_by(&:first).each do |type, details|
 
   start = Time.now
 
-  method = stack_name_or_id = nil
+  method = stack_name_or_id = region = nil
   if description["StackId"]
     method = :update_stack
     stack_name_or_id = description["StackId"]
+    region = stack_name_or_id.split(/:/)[3] # arn:aws:cloudformation:region:acount:...
   else
     method = :create_stack
     stack_name_or_id = stack_name["stack_name"]
+    region = stack_name["region"]
   end
-  puts "using #{method} and #{stack_name_or_id}"
+  puts "using #{method} and #{stack_name_or_id} via region #{region.inspect}"
+
+  cfn_client = Aws::CloudFormation::Client.new(config.merge region: region)
 
   r = cfn_client.send(
     method,
