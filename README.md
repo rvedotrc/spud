@@ -163,8 +163,7 @@ description has a StackId; otherwise create, using the description's StackName).
 
 The default implementation of `push-stacks` calls AWS CloudFormation to update
 the stack; then, it uses `cfn-events` (if available) to show stack events and
-wait for the update to complete.  `cfn-events` is available from
-<https://github.com/rvedotrc/cloudsaw/>.
+wait for the update to complete.
 
 If you want to do things like switch AWS regions or credentials, you could
 override `push-stacks` with your own script which does those things, then
