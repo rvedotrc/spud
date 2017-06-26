@@ -93,7 +93,7 @@ The work to do is presented on stdin as JSON, of the following structure:
 
 ```
     {
-        "argv": [ ... ],
+        "args": [ ... ],
         "stacks": {
             "blue": { "name": "NameOfBlue", "template": "...", "description": "..." },
             "green": { "name": "NameOfGreen", "template": "...", "description": "..." }
@@ -101,7 +101,7 @@ The work to do is presented on stdin as JSON, of the following structure:
     }
 ```
 
-`argv` is a possibly-empty array of strings - the arguments given to `spud
+`args` is a possibly-empty array of strings - the arguments given to `spud
 prepare`.  `stacks` has one entry per stack type, where each stack type has a
 `name` (the name of the stack to retrieve), `template` (filename to write the
 stack's template to) and `description` (filename to write the stack's
