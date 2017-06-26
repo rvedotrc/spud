@@ -94,6 +94,17 @@ describe Spud::Context do
     ])
   end
 
+  it "ignores saved stacks that aren't in stack_types" do
+    given_a_file({ "default" => {
+      "bar" => "BarName",
+    }, })
+    c = Spud::Context.new
+    c.stack_types = %w[ foo ]
+    expect(c.stacks).to eq([
+      Spud::Stack.new(nil, 'foo', nil, nil),
+    ])
+  end
+
   it "loads stacks from stack_names.json, upgrading if necessary" do
     given_a_file({ "default" => {
       "bar" => "BarName",
@@ -119,6 +130,69 @@ describe Spud::Context do
       "foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>nil},
       "bar"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"NameOfBar"},
     }})
+  end
+
+  # Arbitrary choice to be honest, but let's test it
+  it "does preserves old stack types" do
+    given_a_file({
+      "default" => { "foo" => "DefaultFooName" },
+    })
+    c = Spud::Context.new
+    c.stack_types = %w[ bar ]
+    data = capture_save c
+    expect(data).to eq({"default"=>{
+      "bar"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>nil},
+      # foo is not upgraded to a hash, nor is it deleted
+      "foo"=>"DefaultFooName"}
+    })
+  end
+
+  # In current usage within spud, we always set the config_set (if at all)
+  # once, *then* set stack_types (once).  Here we test other variations.
+
+  it "respects config_set when handling stacks" do
+    given_a_file({
+      "default" => { "foo" => "DefaultFooName" },
+      "other" => { "foo" => "OtherFooName" },
+      "yet" => { "another" => { "foo" => "YetAnotherFooName" } },
+    })
+
+    c = Spud::Context.new
+    c.stack_types = %w[ foo ]
+    expect(c.stacks).to eq([
+      Spud::Stack.new('DefaultFooName', 'foo', nil, nil),
+    ])
+
+    c.config_set = 'other'
+    expect(c.stacks).to eq([
+      Spud::Stack.new('OtherFooName', 'foo', nil, nil),
+    ])
+
+    c.config_set = 'yet.another'
+    expect(c.stacks).to eq([
+      Spud::Stack.new('YetAnotherFooName', 'foo', nil, nil),
+    ])
+  end
+
+  it "saves stack names as config_set is changed" do
+    given_no_file
+
+    c = Spud::Context.new
+    c.config_set = 'set1'
+    c.stack_types = %w[ foo ]
+    c.stacks.first.name = 'Set1Foo'
+    c.config_set = 'set2'
+    c.stacks.first.name = 'Set2Foo'
+    c.config_set = 'set.three'
+    c.stacks.first.name = 'SetThreeFoo'
+
+    data = capture_save c
+
+    expect(data).to eq({
+      "set1"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"Set1Foo"}},
+      "set2"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"Set2Foo"}},
+      "set"=>{"three"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"SetThreeFoo"}} },
+    })
   end
 
 end

@@ -71,6 +71,7 @@ module Spud
     end
 
     def config_set=(val)
+      save_stacks
       @config_set = val
       load_stacks
     end
