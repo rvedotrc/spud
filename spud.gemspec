@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = 'spud'
-  s.version     = '2.1.2'
+  s.version     = '2.2.0'
   s.summary     = 'Tool for generating and managing CloudFormation stacks'
   s.description = <<-EOF
     spud is a tool for generating CloudFormation stack templates,
