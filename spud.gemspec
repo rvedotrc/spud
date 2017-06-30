@@ -1,8 +1,12 @@
 # -*- encoding: utf-8 -*-
 
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'spud/version'
+
 Gem::Specification.new do |s|
   s.name        = 'spud'
-  s.version     = '2.2.0'
+  s.version     = Spud::VERSION
   s.summary     = 'Tool for generating and managing CloudFormation stacks'
   s.description = <<-EOF
     spud is a tool for generating CloudFormation stack templates,
