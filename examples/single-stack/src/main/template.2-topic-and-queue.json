@@ -1,0 +1,12 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Trivial example stack",
+    "Resources": {
+        "MyQueue": {
+            "Type": "AWS::SQS::Queue"
+        },
+        "MyTopic": {
+            "Type": "AWS::SNS::Topic"
+        }
+    }
+}

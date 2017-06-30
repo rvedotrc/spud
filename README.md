@@ -30,39 +30,206 @@ You'll need a working modern Ruby, and bundler.
     gem install *.gem
 ```
 
-Basic usage example
--------------------
+Walkthrough
+-----------
 
-Given the following files:
+First, install spud.  Also, ensure your environment has AWS credentials,
+and (if required) `$https_proxy`.
+
+In this example, we'll be working with a single stack, labelled the "main"
+stack.  This is referred to as the "stack type".
+
+Starting in the `spud` source directory,
+
+```
+  cd examples/single-stack
+  cp src/main/template.1-topic-only.json src/main/template.default.json
+  spud prepare
+```
+
+You will be prompted for the name of the "main" stack.  Enter a valid stack
+name, e.g. "MySpudTestStack".
+
+The output will then look a bit like this (don't worry if it's not absolutely
+identical):
+
+```
+Retrieving stack "MySpudTestStack"
+
+Generating target stacks
+
+Normalising
+
+  main : NEW
+
+You should now edit the "next" files to suit, for example using the following
+commands:
+
+  vimdiff tmp/templates/template-main.{current,generated,next}.json ; vim tmp/templates/description-main.next.json
+
+then run spud "apply".
+```
+
+For each stack, `spud` always works with three sets of templates:
+
+ * "current": whatever is actually in AWS CloudFormation
+ * "generated": whatever your source code says you want the stack to look like
+ * "next": what is about to be pushed to AWS CloudFormation, if you run `spud apply`
+
+For a new stack, "current" will basically be blank, since there is no existing
+stack.
+
+After running `spud prepare`, "next" will always be exactly the same as
+"current" – i.e. by default, nothing will be changed, unless you ask for it.
+The next step is to change the "next" file to include whatever changes you
+want to be in CloudFormation – in this case, we can simply copy the
+"generated" file over before running `spud apply`:
+
+FIXME: at this point you currently have to edit `stack_names.json` to include
+the desired region. :-(
+
+```
+    cp tmp/templates/template-main.generated.json tmp/templates/template-main.next.json
+    spud apply
+```
+
+You will be asked for confirmation that you want to create the new stack.
+Enter "Y", and the stack should be created.  As CloudFormation does its work,
+`spud` shows the stack events, and waits for the creation to finish:
+
+```
+2017-06-30T10:21:21Z AWS::CloudFormation::Stack CREATE_IN_PROGRESS MySpudTestStack arn:aws:cloudformation:eu-west-1:123456789012:stack/MySpudTestStack/dcd262c0-5d7d-11e7-9d9e-50a686335cd2 User Initiated
+2017-06-30T10:21:26Z AWS::SNS::Topic CREATE_IN_PROGRESS MyTopic
+2017-06-30T10:21:27Z AWS::SNS::Topic CREATE_IN_PROGRESS MyTopic arn:aws:sns:eu-west-1:123456789012:MySpudTestStack-MyTopic-REMC59UM6J8V Resource creation Initiated
+2017-06-30T10:21:38Z AWS::SNS::Topic CREATE_COMPLETE MyTopic arn:aws:sns:eu-west-1:123456789012:MySpudTestStack-MyTopic-REMC59UM6J8V
+2017-06-30T10:21:40Z AWS::CloudFormation::Stack CREATE_COMPLETE MySpudTestStack arn:aws:cloudformation:eu-west-1:123456789012:stack/MySpudTestStack/dcd262c0-5d7d-11e7-9d9e-50a686335cd2
+```
+
+Congratulations! You've now created your first stack with spud.
+
+If you now re-run `spud prepare`, you'll notice that (a) you aren't asked for
+the stack name, and (b) the summary now shows "same", whereas before it said
+"NEW".
+
+Now let's do an update.
+
+First, let's give `spud` a new template, then re-run `prepare`:
+
+```
+    cp ./src/main/template.2-topic-and-queue.json ./src/main/template.default.json
+    spud prepare
+```
+
+This time, the summary shows that the "main" stack has differences (i.e. that
+"current" and "generated" are different):
+
+```
+  main : DIFFERENT (hunks: 1, lines: 3)
+```
+
+You can use whatever tool you like for viewing and resolving these
+differences, but as an example, you can view the change with `diff`:
+
+```
+    diff -u tmp/templates/template-main.current.json tmp/templates/template-main.generated.json
+```
+
+and, assuming you have "vim" installed, you can use `vimdiff` to look compare
+current / generated / next, and (ideally) make "next" be the same as
+"generated".
+
+For now let's just copy the generated file over, before running "apply" (note
+that these are exactly the same commands we used earlier):
+
+```
+    cp tmp/templates/template-main.generated.json tmp/templates/template-main.next.json
+    spud apply
+```
+
+This time, `spud` shows the changes we're about to apply, before asking if we want to proceed:
+
+```
+--- tmp/templates/template-main.current.json    2017-06-30 11:27:50.000000000 +0100
++++ tmp/templates/template-main.next.json    2017-06-30 11:31:49.000000000 +0100
+@@ -2,6 +2,9 @@
+   "AWSTemplateFormatVersion": "2010-09-09",
+   "Description": "Trivial example stack",
+   "Resources": {
++    "MyQueue": {
++      "Type": "AWS::SQS::Queue"
++    },
+     "MyTopic": {
+       "Type": "AWS::SNS::Topic"
+     }
+
+INFO: Template has no parameters
+Update the main stack MySpudTestStack? [y/N]:
+```
+
+Again, if we say yes, then spud applies the change for us, showing us the
+stack events:
+
+```
+Update the main stack MySpudTestStack? [y/N]: y
+Pushing stack arn:aws:cloudformation:eu-west-1:123456789012:stack/MySpudTestStack/dcd262c0-5d7d-11e7-9d9e-50a686335cd2 using update_stack via region "eu-west-1"
+
+2017-06-30T10:33:15Z AWS::CloudFormation::Stack UPDATE_IN_PROGRESS MySpudTestStack arn:aws:cloudformation:eu-west-1:123456789012:stack/MySpudTestStack/dcd262c0-5d7d-11e7-9d9e-50a686335cd2 User Initiated
+2017-06-30T10:33:20Z AWS::SQS::Queue CREATE_IN_PROGRESS MyQueue
+2017-06-30T10:33:21Z AWS::SQS::Queue CREATE_IN_PROGRESS MyQueue https://sqs.eu-west-1.amazonaws.com/123456789012/MySpudTestStack-MyQueue-1QL7IAM2WMJTY Resource creation Initiated
+2017-06-30T10:33:21Z AWS::SQS::Queue CREATE_COMPLETE MyQueue https://sqs.eu-west-1.amazonaws.com/123456789012/MySpudTestStack-MyQueue-1QL7IAM2WMJTY
+2017-06-30T10:33:24Z AWS::CloudFormation::Stack UPDATE_COMPLETE_CLEANUP_IN_PROGRESS MySpudTestStack arn:aws:cloudformation:eu-west-1:123456789012:stack/MySpudTestStack/dcd262c0-5d7d-11e7-9d9e-50a686335cd2
+2017-06-30T10:33:25Z AWS::CloudFormation::Stack UPDATE_COMPLETE MySpudTestStack arn:aws:cloudformation:eu-west-1:123456789012:stack/MySpudTestStack/dcd262c0-5d7d-11e7-9d9e-50a686335cd2
+```
+
+So the basic pattern is:
+
+ * make `src/*/template.default.json` contain the desired stack template
+ * "spud prepare"
+ * Use vimdiff or whatever to resolve the differences between current / generated / next,
+   making "next" contain whatever you want to push to CloudFormation
+ * "spud apply"
+
+
+Multiple stack types
+--------------------
+
+In the walkthrough above, we used a single stack, referred to as the "main"
+stack.  If you need to work with a set of, say, two stacks, just create more
+directories in parallel.  For example, here's a "blue" and a "green" stack:
 
  * `./src/blue/template.default.json`
  * `./src/green/template.default.json`
 
-which are AWS CloudFormation template files, then running `spud prepare` (with
-appropriate AWS credentials) will:
+`spud` will process all of the stacks.  `spud` always asks before making any
+changes to CloudFormation.
 
- * ask you for the name of the "blue" and "green" stacks
- * retrieve the "blue" and "green" stacks from AWS CloudFormation
- * generate the desired "blue" and "green" stack templates (which just means copying the above files)
- * show you a summary of how the retrieved stacks compare to the generated stacks
- * leave some JSON files in `./tmp/templates/*.json`
- * prompt you to edit the "next" files, then apply the changes using `spud apply`
+Working with multiple AWS regions
+---------------------------------
 
-In the above example, "blue" and "green" are said to be the _stack types_.
-The stack types are discovered by listing the `./src` directory.  Each stack
-type corresponds to one stack.  You need to have at least one stack type,
-otherwise `spud` will have no work to do.
+`stack_names.json` includes the region of each stack:
 
-After making any edits to the "next" files in `./tmp/templates`, running `spud
-apply` will:
+```
+{
+  "default": {
+    "main": {
+      "account_alias": null,
+      "region": "eu-west-1",
+      "stack_name": "MySpudTestStack"
+    }
+  }
+}
+```
 
- * check the stack parameters, warning you about added or removed parameters,
-   or parameters which don't yet have a value
- * for each stack,
-   * if there's a change to make,
-     * shows a preview of the changes
-     * asks for confirmation that the changes should be applied to AWS CloudFormation
-     * (if confirmed) applies the changes
+`spud` switches region to deal with each stack as required.
+
+There is currently no prompting for the region, so you have to edit
+`stack_names.json` yourself to work with regions.
+
+Working with multiple AWS accounts
+----------------------------------
+
+There is a space in `stack_names.json` for the account alias associated with
+each stack, but *this has no effect*, unless you extend spud (see below).
 
 Extending spud
 --------------
@@ -169,61 +336,6 @@ If you want to do things like switch AWS regions or credentials, you could
 override `push-stacks` with your own script which does those things, then
 runs the default `push-stacks` via $SPUD_DEFAULT_SCRIPTS_DIR.
 
-Walkthrough
------------
-
-Preparation:
-
- * ```gem build spud.gemspec && gem install spud*.gem```
- * ensure your environment contains your AWS credentials if required
- * ensure your environment contains $https_proxy if required
-
-Creating a new stack (let's call the stack type "resources"):
-
- * `mkdir /somewhere/you/want/to/work`
- * `cd /somewhere/you/want/to/work`
- * `mkdir -p src/resources`
- * copy some stack template to `src/resources/template.json`
- * Run `spud prepare`
- * When prompted, enter the name of the stack you want to create
- * `spud` now checks AWS CloudFormation, finds that the stack doesn't exist,
-   generates the target template (just a file copy), and shows that the
-   "resources" stack is "NEW"
- * Edit `./tmp/templates/template-resources.next.json` to look like the stack
-   you want to create (for example: just copy it from
-   `./tmp/templates/template-resources.generated.json`)
-   * If you have `vim` installed, you can use the example command that `spud`
-     shows on screen to do the editing
- * Run `spud apply`
- * `spud` shows that the "resources" stack is NEW, and asks if you want to
-   create it.  After confirmation, `spud` creates the stack.
-
-Updating an existing stack:
-
- * Make some changes to `src/resources/template.json` - for example, add a
-   resource
- * Run `spud prepare`
- * `spud` now retrieves the existing stack from AWS CloudFormation, generates
-   the target template (just a file copy), and shows that the stack is
-   "DIFFERENT"
- * Edit `./tmp/templates/template-resources.next.json` to reflect how you want
-   the updated stack to look (for example: just copy it from
-   `./tmp/templates/template-resources.generated.json`)
-   * If you have `vim` installed, you can use the example command that `spud`
-     shows on screen to do the editing
- * Run `spud apply`
- * `spud` recognises that the "resources" stack is changed; shows you the
-   differences, and asks if you want to update it.  After confirmation, `spud`
-   updates the stack.
-
-The pattern of `spud`'s usage is always the same:
-
- * Edit your stack source (by default: ```src/*/template.json```)
- * `spud prepare`
- * Do a three-way merge from the "current" and "generated" templates, writing
-   the results into the "next" template
- * `spud apply`
-
 Development status
 ------------------
 
@@ -250,6 +362,6 @@ Changes I'm considering:
 What it doesn't do, and probably never will:
 
  * Handle deletion of stacks
- * Any knowledge of AWS credentials or regions.  To handle this, override
-   `retrieve-stacks` and `push-stacks`
+ * Any knowledge of how to acquire AWS credentials.  To handle this, extend
+   spud, overriding `retrieve-stacks` and `push-stacks`
 

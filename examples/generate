@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+
+from troposphere import Template
+from troposphere.sns import Topic
+from troposphere.sqs import Queue
+
+import os
+os.chdir(os.path.dirname(__file__))
+
+template = Template()
+template.description = "Trivial example stack"
+template.add_version('2010-09-09')
+
+my_topic = template.add_resource(
+    Topic("MyTopic")
+)
+
+with open("./single-stack/src/main/template.1-topic-only.json", "w") as f:
+    f.write(template.to_json())
+
+my_queue = template.add_resource(
+    Queue("MyQueue")
+)
+
+with open("./single-stack/src/main/template.2-topic-and-queue.json", "w") as f:
+    f.write(template.to_json())
+
