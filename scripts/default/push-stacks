@@ -38,9 +38,6 @@ spec["stacks"].entries.sort_by(&:first).each do |type, details|
   # Reduce whitespace
   template = JSON.generate(JSON.parse(IO.read details["template"]))
 
-  stack_name = description["StackName"]
-  puts "Pushing stack #{stack_name.inspect}"
-
   start = Time.now
 
   method = stack_name_or_id = region = nil
@@ -50,10 +47,10 @@ spec["stacks"].entries.sort_by(&:first).each do |type, details|
     region = stack_name_or_id.split(/:/)[3] # arn:aws:cloudformation:region:acount:...
   else
     method = :create_stack
-    stack_name_or_id = stack_name["stack_name"]
-    region = stack_name["region"]
+    stack_name_or_id = details["name"]
+    region = details["region"]
   end
-  puts "using #{method} and #{stack_name_or_id} via region #{region.inspect}"
+  puts "Pushing stack #{stack_name_or_id} using #{method} via region #{region.inspect}"
 
   cfn_client = Aws::CloudFormation::Client.new(config.merge region: region)
 
