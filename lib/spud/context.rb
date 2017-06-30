@@ -1,8 +1,8 @@
 module Spud
 
   class Stack
-    attr_reader :account_alias, :type, :region
-    attr_accessor :name
+    attr_reader :account_alias, :type
+    attr_accessor :name, :region
 
     def initialize(name, type, account_alias, region)
       @name = name

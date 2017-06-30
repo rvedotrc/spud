@@ -15,6 +15,7 @@ module Spud
         # when the stacks have been successfully pushed to AWS; and then, do
         # config load/amend/save in as small a window as possible.
         stack.name ||= prompted_name(stack.type)
+        stack.region ||= prompted_region(stack.type)
       end
       stacks
     end
@@ -48,6 +49,13 @@ module Spud
         end
         nil
       end
+    end
+
+    def prompted_region(type)
+      UserInteraction.get_mandatory_text(
+        question: "Enter AWS region for the #{type.inspect} stack",
+        prefill: ENV["AWS_REGION"],
+      )
     end
 
   end

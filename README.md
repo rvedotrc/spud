@@ -47,8 +47,8 @@ Starting in the `spud` source directory,
   spud prepare
 ```
 
-You will be prompted for the name of the "main" stack.  Enter a valid stack
-name, e.g. "MySpudTestStack".
+You will be prompted for the name and the region of the "main" stack.  Enter a
+valid stack name, e.g. "MySpudTestStack", and pick a region (e.g. eu-west-1).
 
 The output will then look a bit like this (don't worry if it's not absolutely
 identical):
@@ -84,9 +84,6 @@ After running `spud prepare`, "next" will always be exactly the same as
 The next step is to change the "next" file to include whatever changes you
 want to be in CloudFormation – in this case, we can simply copy the
 "generated" file over before running `spud apply`:
-
-FIXME: at this point you currently have to edit `stack_names.json` to include
-the desired region. :-(
 
 ```
     cp tmp/templates/template-main.generated.json tmp/templates/template-main.next.json
