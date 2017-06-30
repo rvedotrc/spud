@@ -187,11 +187,11 @@ So the basic pattern is:
  * "spud apply"
 
 
-Multiple stack types
---------------------
+Working with multiple stacks
+----------------------------
 
 In the walkthrough above, we used a single stack, referred to as the "main"
-stack.  If you need to work with a set of, say, two stacks, just create more
+stack.  If you need to work with more stacks, just create more
 directories in parallel.  For example, here's a "blue" and a "green" stack:
 
  * `./src/blue/template.default.json`
