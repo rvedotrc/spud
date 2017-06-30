@@ -219,9 +219,6 @@ Working with multiple AWS regions
 
 `spud` switches region to deal with each stack as required.
 
-There is currently no prompting for the region, so you have to edit
-`stack_names.json` yourself to work with regions.
-
 Working with multiple AWS accounts
 ----------------------------------
 
