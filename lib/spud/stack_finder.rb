@@ -45,7 +45,7 @@ module Spud
         name
       else
         if name != ""
-          $stderr.puts "Warning: get-stack-name-suggestion gave an invalid stack name (#{name.inspect})"
+          $stderr.puts "Warning: stack name suggester gave an invalid stack name (#{name.inspect})"
         end
         nil
       end

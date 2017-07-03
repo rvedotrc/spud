@@ -47,17 +47,17 @@ module Spud
           t.discard!
           t.data
         rescue Errno::ENOENT => e
-          $stderr.puts "Error: retrieve-stacks script ran, but did not create #{f}"
+          $stderr.puts "Error: puller ran, but did not create #{f}"
           exit 1
         rescue JSON::ParserError => e
           if File.stat(f).size == 0
-            $stderr.puts "Error: retrieve-stacks script ran and created #{f}, but the file is empty"
+            $stderr.puts "Error: puller ran and created #{f}, but the file is empty"
           else
-            $stderr.puts "Error: retrieve-stacks script ran and created #{f}, but it does not contain valid JSON"
+            $stderr.puts "Error: puller ran and created #{f}, but it does not contain valid JSON"
           end
           exit 1
         rescue Exception => e
-          $stderr.puts "Error: retrieve-stacks script ran, but there was an error checking #{f}: #{e}"
+          $stderr.puts "Error: puller ran, but there was an error checking #{f}: #{e}"
           exit 1
         end
       end
@@ -68,7 +68,7 @@ module Spud
         t = tmp_files.get(:current_template, stack.type)
         d = tmp_files.get(:current_description, stack.type)
 
-        # retrieve-stacks should write '{}' to both files if the stack does
+        # puller should write '{}' to both files if the stack does
         # not yet exist.
 
         if t.data.empty? and d.data.empty?
@@ -76,7 +76,7 @@ module Spud
           t.data = Spud::Stubber.make_template
           d.data = Spud::Stubber.make_description(stack.name)
         elsif t.data.empty? != d.data.empty?
-          $stderr.puts "Error: retrieve-stacks created partially-empty results for the #{stack.type} stack"
+          $stderr.puts "Error: puller created partially-empty results for the #{stack.type} stack"
           exit 1
         end
       end

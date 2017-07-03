@@ -47,17 +47,17 @@ module Spud
           t.discard!
           t.data
         rescue Errno::ENOENT => e
-          $stderr.puts "Error: retrieve-stacks script ran, but did not create #{f}"
+          $stderr.puts "Error: generator ran, but did not create #{f}"
           exit 1
         rescue JSON::ParserError => e
           if File.stat(f).size == 0
-            $stderr.puts "Error: retrieve-stacks script ran and created #{f}, but the file is empty"
+            $stderr.puts "Error: generator ran and created #{f}, but the file is empty"
           else
-            $stderr.puts "Error: retrieve-stacks script ran and created #{f}, but it does not contain valid JSON"
+            $stderr.puts "Error: generator ran and created #{f}, but it does not contain valid JSON"
           end
           exit 1
         rescue Exception => e
-          $stderr.puts "Error: retrieve-stacks script ran, but there was an error checking #{f}: #{e}"
+          $stderr.puts "Error: generator ran, but there was an error checking #{f}: #{e}"
           exit 1
         end
       end
