@@ -35,10 +35,10 @@ module Spud
     attr_accessor :stack_name_suggester
     attr_accessor :pusher
     def initialize()
-      @puller = DefaultPuller.new
-      @generator = DefaultGenerator.new
-      @stack_name_suggester = DefaultStackNameSuggester.new
-      @pusher = DefaultPusher.new
+      @puller = Spud::Ext::DefaultPuller.new
+      @generator = Spud::Ext::DefaultGenerator.new
+      @stack_name_suggester = Spud::Ext::DefaultStackNameSuggester.new
+      @pusher = Spud::Ext::DefaultPusher.new
     end
   end
 

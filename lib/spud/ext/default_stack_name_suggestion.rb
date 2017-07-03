@@ -1,13 +1,17 @@
 module Spud
 
-  class DefaultStackNameSuggester
+  module Ext
 
-    # type: stack type to suggest a name for.
-    def suggest_name(context, type)
-      ScriptRunner.new(
-        cmd: File.join(context.scripts_dir, "get-stack-name-suggestion"),
-        args: [ type ] + context.argv,
-      ).run!.output.chomp
+    class DefaultStackNameSuggester
+
+      # type: stack type to suggest a name for.
+      def suggest_name(context, type)
+        ScriptRunner.new(
+          cmd: File.join(context.scripts_dir, "get-stack-name-suggestion"),
+          args: [ type ] + context.argv,
+        ).run!.output.chomp
+      end
+
     end
 
   end
