@@ -8,8 +8,8 @@ module Spud
       # stacks {
       #     "<stack type>" => {
       #       :name => "<stack name>",
-      #       :region => "<AWS region alias>",
-      #       :account_alias => "<AWS Account Alias>",
+      #       :region => "<AWS region>", # might be nil
+      #       :account_alias => "<AWS Account Alias>", # might be nil
       #       :template => "<File path into which the stack template should be written>"
       #       :description => "<File path into which the stack description should be written>"
       #     }, ...

@@ -4,11 +4,12 @@ module Spud
 
     class DefaultPusher
 
+      # args: array of args that spud was called with.
       # stacks {
       #     "<stack type>" => {
       #       :name => "<stack name>",
-      #       :region => "<AWS region alias>",
-      #       :account_alias => "<AWS Account Alias>",
+      #       :region => "<AWS region>", # might be nil
+      #       :account_alias => "<AWS Account Alias>", # might be nil
       #       :template => "<File path from which the template should be read>"
       #       :description => "<File path from which the stack description should be read>"
       #     }, ...
