@@ -78,16 +78,6 @@ describe Spud::Main do
     expect(context.tmp_dir).to eq("x")
   end
 
-  it "supports -s" do
-    context = context_for_options(%w[ -s x ])
-    expect(context.scripts_dir).to eq("x")
-  end
-
-  it "supports --scripts-dir" do
-    context = context_for_options(%w[ --scripts-dir x ])
-    expect(context.scripts_dir).to eq("x")
-  end
-
   it "supports -c" do
     context = context_for_options(%w[ -c x.y ])
     expect(context.config_set).to eq("x.y")

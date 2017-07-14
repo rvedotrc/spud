@@ -47,15 +47,12 @@ module Spud
     JSON_FILE = "stack_names.json"
 
     attr_accessor :argv
-    attr_accessor :scripts_dir
     attr_accessor :tmp_dir
     attr_reader :stack_types
     attr_reader :config_set
     attr_reader :extensions
 
     def initialize
-      @scripts_dir = File.expand_path("../../scripts/default", File.dirname(__FILE__))
-      ENV["SPUD_DEFAULT_SCRIPTS_DIR"] = @scripts_dir
       @tmp_dir = File.join "tmp", "templates"
       @persisted_config = load_config
       @config = Spud.deep_copy(@persisted_config)
@@ -98,7 +95,6 @@ module Spud
     # FIXME: untested
     def to_h
       {
-        scripts_dir: @scripts_dir,
         tmp_dir: @tmp_dir,
         config_set: @config_set,
         :argv => argv,

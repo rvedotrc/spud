@@ -228,107 +228,35 @@ each stack, but *this has no effect*, unless you extend spud (see below).
 Extending spud
 --------------
 
-`spud` delegates some of its work separate executables: the "scripts".  A
-default implementation of each one is provided, but you can provide your own
-via the `--scripts-dir=DIR` option.  If you do this, the location of the
-default scripts is available via the `$SPUD_DEFAULT_SCRIPTS_DIR` environment
-variable.
+spud is designed to be extended in a few specific areas, referred to as the
+"extensions":
 
-__The `get-stack-name-suggestion` script__
+ * the _generator_ is responsible for generating the desired stack template
+   JSON
+ * the _stack name suggester_ is responsible for suggesting names for new
+   stacks
+ * the _puller_ is responsible for retrieving the existing stack details from
+   AWS CloudFormation
+ * the _pusher_ is responsible for applying the "next" stack details to
+   AWS CloudFormation
 
-Used to get the suggested name of a stack (if the actual name is not yet
-known, or e.g. if the stack has not yet been created).
-
-ARGV will be the stack type, plus any arguments that you passed to `spud
-prepare`.  The script should emit an (optional) syntactically-valid stack
-name, followed by an (optional) newline, to stdout.  It should exit with
-status 0.
-
-__The `retrieve-stacks` script__
-
-Used to retrieve the existing stacks, if any, from AWS CloudFormation.  The
-default script is probably perfectly good enough for you, unless you want to
-switch regions or accounts (in which case, see below).
-
-The work to do is presented on stdin as JSON, of the following structure:
+The intended way of extending spud is to create your own executable (e.g.
+`my-custom-spud`) which would construct a `Spud::Context` object, override the
+default extentions, then run `Spud::Main.new(args, context).run` .
 
 ```
-    {
-        "args": [ ... ],
-        "stacks": {
-            "blue": { "name": "NameOfBlue", "template": "...", "description": "..." },
-            "green": { "name": "NameOfGreen", "template": "...", "description": "..." }
-        }
-    }
+# You don't have to override everything!
+context = Spud::Context.new
+context.extensions.stack_name_suggester = MyCustomSpud::NameSuggester.new
+context.extensions.generator = MyCustomSpud::Generator.new
+context.extensions.puller = MyCustomSpud::Puller.new
+context.extensions.pusher = MyCustomSpud::Pusher.new
+
+Spud::Main.new(ARGV, context).run
 ```
 
-`args` is a possibly-empty array of strings - the arguments given to `spud
-prepare`.  `stacks` has one entry per stack type, where each stack type has a
-`name` (the name of the stack to retrieve), `template` (filename to write the
-stack's template to) and `description` (filename to write the stack's
-description to).
-
-If the stack exists, then the description written should be of the structure:
-
-```
-    {
-        "Stacks": [ {
-            "Capabilities": ...,
-            "Description": ...
-        } ]
-    }
-```
-
-i.e. with a `Stacks` array wrapper, and using `TitleCase` keys (not
-```snake_case```), and the template should be JSON of the form:
-
-```
-   {
-       "AWSTemplateFormatVersion": ...,
-       "Resources": ...,
-       ...
-   }
-```
-
-If the script does _not_ exist, `retrieve-stacks` should write an empty JSON
-object (`{}`) to both the description and template.
-
-stdout and stderr are unchanged (i.e. they're probably the terminal), and
-ARGV is not used.
-
-If you want to do things like switch AWS regions or credentials, you could
-override `retrieve-stacks` with your own script which does those things, then
-runs the default `retrieve-stacks` via $SPUD_DEFAULT_SCRIPTS_DIR.
-
-__The `generate-stacks` script__
-
-Much like `retrieve-stacks`, `generate-stacks` gets its work as JSON on stdin,
-and doesn't use stdout, stderr, and ARGV.
-
-`generate-stacks` should generate the desired JSON template for each stack,
-and write them to the given file.  (Currently it is not asked to generate the
-description - only the template).
-
-The default implementation of `generate-stacks` just copies the stack template
-from the `./src` directory.  This may be sufficient for you - as long as you
-make sure the template(s) are generated and in place before you run `spud`.
-
-__The `push-stacks` script__
-
-Much like `retrieve-stacks`, `push-stacks` gets its work as JSON on stdin,
-and doesn't use stdout, stderr, and ARGV.
-
-`push-stacks` should create or update the stacks in AWS CloudFormation
-according to the given description and template (update if the stack
-description has a StackId; otherwise create, using the description's StackName).
-
-The default implementation of `push-stacks` calls AWS CloudFormation to update
-the stack; then, it uses `cfn-events` (if available) to show stack events and
-wait for the update to complete.
-
-If you want to do things like switch AWS regions or credentials, you could
-override `push-stacks` with your own script which does those things, then
-runs the default `push-stacks` via $SPUD_DEFAULT_SCRIPTS_DIR.
+The extensions have to implement the same interface as the default, of course;
+see `lib/spud/ext/default*` for a guide.
 
 Development status
 ------------------
@@ -340,12 +268,12 @@ What it does:
 
 Changes I'm considering:
 
- * Delegate finding the list of stack types to an external script
+ * Delegate finding the list of stack types to an extension
    * This would allow much more easily for cases where an entire stack is not
      required in some contexts (e.g. a "test support" stack is not required in live)
    * Default implementation: effectively `ls src/`
  * Delegate the current function of the ```stack_names.json``` file to an
-   external script
+   extension
    * This would allow the site-local usage to be as simple or complex as
      required, e.g. store information about how to acquire credentials / how
      to select the region for each stack type
@@ -357,5 +285,5 @@ What it doesn't do, and probably never will:
 
  * Handle deletion of stacks
  * Any knowledge of how to acquire AWS credentials.  To handle this, extend
-   spud, overriding `retrieve-stacks` and `push-stacks`
+   spud, overriding the puller and pusher.
 

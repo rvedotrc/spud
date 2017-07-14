@@ -39,9 +39,6 @@ Usage: spud [GLOBAL-OPTIONS] apply [ARGS ...]
 Usage: spud help
 
 EOF
-        opts.on("-s", "--scripts-dir=DIR", "Scripts directory (default: see below)") do |v|
-          context.scripts_dir = v
-        end
         opts.on("-t", "--tmp-dir=DIR", "Working files directory (default: #{context.tmp_dir})") do |v|
           context.tmp_dir = v
         end
@@ -50,13 +47,10 @@ EOF
         end
         opts.separator <<'EOF'
 
-Any ARGS are uninterpreted by spud but made available to the various external
-scripts.
+Any ARGS are uninterpreted by spud but made available to extensions.
 
 The working files directory (default: #{context.tmp_dir}) will be created
-(like "mkdir -p") on startup, and is NOT cleaned up on exit.  The scripts
-directory defaults to a directory within 'spud'; if you override
---scripts-dir, you can find the default using $SPUD_DEFAULT_SCRIPTS_DIR.
+(like "mkdir -p") on startup, and is NOT cleaned up on exit.
 
 --config-set=KEY can be used to store several independent sets of
 configuration (in "stack_names.json").  For example if you have "int", "test"

@@ -27,15 +27,8 @@ describe Spud::Context do
     given_no_file
     c = Spud::Context.new
     expect(c.tmp_dir).to eq("tmp/templates")
-    expect(c.scripts_dir).to end_with("/scripts/default")
-    expect(File.exist?( c.scripts_dir + "/generate-stacks" )).to be_truthy
     expect(c.config_set).to eq("default")
     expect(c.config).to eq({})
-  end
-
-  it "provides SPUD_DEFAULT_SCRIPTS_DIR" do
-    c = Spud::Context.new
-    expect(ENV["SPUD_DEFAULT_SCRIPTS_DIR"]).to eq(c.scripts_dir)
   end
 
   it "saves config if modified" do
