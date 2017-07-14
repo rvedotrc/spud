@@ -19,8 +19,6 @@ module Spud
     end
 
     def run
-      # FIXME some way of handling creation
-
       unless has_changes?
         UserInteraction.info_press_return "No changes for the #{stack_type} stack #{stack_name}"
         puts ""

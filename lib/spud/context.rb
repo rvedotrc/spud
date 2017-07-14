@@ -34,7 +34,7 @@ module Spud
     attr_accessor :generator
     attr_accessor :stack_name_suggester
     attr_accessor :pusher
-    def initialize()
+    def initialize
       @puller = Spud::Ext::DefaultPuller.new
       @generator = Spud::Ext::DefaultGenerator.new
       @stack_name_suggester = Spud::Ext::DefaultStackNameSuggester.new
