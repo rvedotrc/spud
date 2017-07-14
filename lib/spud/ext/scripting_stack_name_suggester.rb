@@ -2,7 +2,7 @@ module Spud
 
   module Ext
 
-    class DefaultStackNameSuggester
+    class ScriptingStackNameSuggester
 
       # type: stack type to suggest a name for.
       # args: array of args that spud was called with, which we then prefix

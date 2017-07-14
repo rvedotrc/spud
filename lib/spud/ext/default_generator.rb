@@ -1,28 +1,20 @@
+require 'fileutils'
+
 module Spud
 
   module Ext
 
     class DefaultGenerator
 
-      # args: array of args that spud was called with.
-      # stacks {
-      #     "<stack type>" => {
-      #       :name => "<stack name>",
-      #       :region => "<AWS region>", # might be nil
-      #       :account_alias => "<AWS Account Alias>", # might be nil
-      #       :template => "<File path into which the stack template should be written>"
-      #       :description => "<File path into which the stack description should be written>"
-      #     }, ...
-      # }
       def generate(context, stacks)
-        spec = {
-          args: context.argv,
-          stacks: stacks
-        }
-        JsonSpecScriptRunner.new(
-          cmd: File.join(context.scripts_dir, "generate-stacks"),
-          spec: spec,
-        ).run!
+        env = context.argv.last || "default"
+
+        # Just a simple copy
+        stacks.each do |stack_type, details|
+          src = "src/#{stack_type}/template.#{env}.json"
+          dst = details[:template]
+          FileUtils.cp src, dst
+        end
       end
 
     end

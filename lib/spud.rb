@@ -25,5 +25,5 @@ require_relative 'spud/version'
 
 require_relative 'spud/ext/default_puller'
 require_relative 'spud/ext/default_generator'
-require_relative 'spud/ext/default_stack_name_suggestion'
+require_relative 'spud/ext/default_stack_name_suggester'
 require_relative 'spud/ext/default_pusher'
