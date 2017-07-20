@@ -159,6 +159,8 @@ This time, `spud` shows the changes we're about to apply, before asking if we wa
        "Type": "AWS::SNS::Topic"
      }
 
+<then a CloudFormation change set is prepared, and displayed>...
+
 INFO: Template has no parameters
 Update the main stack MySpudTestStack? [y/N]:
 ```
