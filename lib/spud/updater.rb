@@ -36,6 +36,8 @@ module Spud
       puts "The #{stack_type} stack #{stack_name} is NEW"
       puts ""
 
+      prepare_update
+
       show_parameter_overrides
 
       unless UserInteraction.confirm_default_no(question: "Create the #{stack_type} stack #{stack_name}?")
@@ -52,6 +54,8 @@ module Spud
       puts ""
       show_diffs
       puts ""
+
+      prepare_update
 
       show_parameter_overrides
 
@@ -113,7 +117,19 @@ module Spud
       puts ""
     end
 
+    def prepare_update
+      stacks = prepare_spec
+      context.extensions.pusher.prepare(context, stacks)
+    end
+
     def do_update
+      stacks = prepare_spec
+      context.extensions.pusher.push_stacks(context, stacks)
+    end
+
+    private
+
+    def prepare_spec
       stack = context.stacks.find {|stack| stack.type == stack_type}
 
       stacks = {
@@ -125,8 +141,6 @@ module Spud
           description: next_description.path,
         }
       }
-
-      context.extensions.pusher.push_stacks(context, stacks)
     end
 
   end

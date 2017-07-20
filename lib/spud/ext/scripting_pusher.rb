@@ -4,6 +4,9 @@ module Spud
 
     class ScriptingPusher
 
+      def prepare(context, stacks)
+      end
+
       # args: array of args that spud was called with.
       # stacks {
       #     "<stack type>" => {

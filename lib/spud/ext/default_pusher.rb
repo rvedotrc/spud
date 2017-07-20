@@ -9,9 +9,19 @@ module Spud
     # In the default implementation, account_alias is ignored.
     class DefaultPusher
 
+      def initialize
+        @change_set_descriptions = {}
+      end
+
+      def prepare(context, stacks)
+        stack_types(stacks).each do |stack_type|
+          prepare_stack context, stack_type, stacks[stack_type]
+        end
+      end
+
       def push_stacks(context, stacks)
         stack_types(stacks).each do |stack_type|
-          push_stack context, stacks[stack_type]
+          push_stack context, stack_type, stacks[stack_type]
         end
       end
 
@@ -41,7 +51,33 @@ module Spud
 
       private
 
-      def push_stack(context, details)
+      def prepare_stack(context, stack_type, details)
+        cfn_client = get_client(details)
+
+        change_set_id = create_change_set context, details, cfn_client
+        change_set_description = wait_for_change_set_to_be_available change_set_id, cfn_client
+        display_change_set change_set_description
+
+        @change_set_descriptions[stack_type] = change_set_description
+      end
+
+      def push_stack(context, stack_type, details)
+        start = Time.now
+
+        cfn_client = get_client(details)
+        change_set_description = @change_set_descriptions[stack_type]
+        p change_set_description
+
+        r = cfn_client.execute_change_set(change_set_name: change_set_description.change_set_id)
+        p r
+        puts ""
+
+        watch_stack_events change_set_description.stack_id, cfn_client, start - 60
+      end
+
+      def create_change_set(context, details, cfn_client)
+        change_set_name = "spud-changeset-#{Time.now.to_i}"
+
         # :name, :region, :account_alias, :template, :description
         description = JSON.parse(IO.read details[:description])
         description = description["Stacks"][0]
@@ -49,24 +85,17 @@ module Spud
         # Reduce whitespace
         template = JSON.generate(JSON.parse(IO.read details[:template]))
 
-        start = Time.now
-
-        method = stack_name_or_id = region = nil
+        change_set_type = stack_name_or_id = nil
         if description["StackId"]
-          method = :update_stack
+          change_set_type = "UPDATE"
           stack_name_or_id = description["StackId"]
-          region = stack_name_or_id.split(/:/)[3] # arn:aws:cloudformation:region:acount:...
         else
-          method = :create_stack
+          change_set_type = "CREATE"
           stack_name_or_id = details[:name]
-          region = details[:region]
         end
-        puts "Pushing stack #{stack_name_or_id} using #{method} via region #{region.inspect}"
+        puts "Creating #{change_set_type} change set for stack #{stack_name_or_id}"
 
-        cfn_client = get_client(details)
-
-        r = cfn_client.send(
-          method,
+        r = cfn_client.create_change_set(
           stack_name: stack_name_or_id,
           template_body: template,
           parameters: description["Parameters"].map do |param|
@@ -83,10 +112,62 @@ module Spud
               value: tag["Value"],
             }
           end,
+          change_set_name: change_set_name,
+          change_set_type: change_set_type,
         )
-        puts ""
 
-        watch_stack_events r.stack_id, cfn_client, start - 60
+        r.id
+      end
+
+      def wait_for_change_set_to_be_available(change_set_id, cfn_client)
+        r = nil
+
+        puts "Waiting for change set to be available for execution ..."
+        loop do
+          r = cfn_client.describe_change_set(change_set_name: change_set_id)
+          p [ r.status, r.execution_status, r.status_reason ]
+
+          # Typical:
+          # ["CREATE_PENDING", "UNAVAILABLE", nil]
+          # ["CREATE_IN_PROGRESS", "UNAVAILABLE", nil]
+          # ["CREATE_COMPLETE", "AVAILABLE", nil]
+
+          # No changes:
+          # ["FAILED", "UNAVAILABLE", "The submitted information didn't contain changes. Submit different information to create a change set."]
+
+          if r.execution_status == "AVAILABLE"
+            puts ""
+            return r
+          end
+
+          if r.status == "FAILED"
+            puts "Change set failed: #{r.status_reason}"
+            collect_change_set_for_analysis r
+            exit 1
+          end
+
+          sleep 1
+        end
+      end
+
+      def display_change_set(change_set)
+        puts "Change set is now available for execution:"
+        data = HashSorter.new.sort_hash(change_set.to_h)
+        puts JSON.pretty_generate(data)
+        collect_change_set_for_analysis change_set
+        puts ""
+      end
+      protected :display_change_set
+
+      def collect_change_set_for_analysis(change_set)
+        data = HashSorter.new.sort_hash(change_set.to_h)
+        content = JSON.pretty_generate(data) + "\n"
+
+        filename = "/tmp/spud-changeset-#{change_set.stack_name}-#{Time.now.utc.to_i}.json"
+        tmp = filename + ".tmp"
+        IO.write(tmp, content)
+        File.rename tmp, filename
+        puts "(changeset saved for analysis purposes to #{filename})"
       end
 
       def watch_stack_events(stack_id, cfn_client, since)
