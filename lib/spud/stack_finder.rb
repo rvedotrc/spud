@@ -16,6 +16,7 @@ module Spud
         # config load/amend/save in as small a window as possible.
         stack.name ||= prompted_name(stack.type)
         stack.region ||= prompted_region(stack.type)
+        stack.account_alias ||= prompted_account_alias(stack.region)
       end
       stacks
     end
@@ -56,6 +57,11 @@ module Spud
         question: "Enter AWS region for the #{type.inspect} stack",
         prefill: ENV["AWS_REGION"],
       )
+    end
+
+    def prompted_account_alias(region)
+      return nil if @context.extensions.account_alias_prompter.nil?
+      @context.extensions.account_alias_prompter.prompt(region)
     end
 
   end

@@ -1,8 +1,8 @@
 module Spud
 
   class Stack
-    attr_reader :account_alias, :type
-    attr_accessor :name, :region
+    attr_reader :type
+    attr_accessor :account_alias, :name, :region
 
     def initialize(name, type, account_alias, region)
       @name = name
@@ -34,11 +34,13 @@ module Spud
     attr_accessor :generator
     attr_accessor :stack_name_suggester
     attr_accessor :pusher
+    attr_accessor :account_alias_prompter
     def initialize
       @puller = Spud::Ext::DefaultPuller.new
       @generator = Spud::Ext::DefaultGenerator.new
       @stack_name_suggester = Spud::Ext::DefaultStackNameSuggester.new
       @pusher = Spud::Ext::DefaultPusher.new
+      @account_alias_prompter = nil
     end
   end
 
