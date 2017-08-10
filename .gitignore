@@ -3,3 +3,4 @@ tmp
 stack_names.json
 *.gem
 /nbproject
+Gemfile.lock
