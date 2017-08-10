@@ -82,8 +82,8 @@ describe Spud::Context do
     c = Spud::Context.new
     c.stack_types = %w[ foo bar ]
     expect(c.stacks).to eq([
-      Spud::Stack.new(nil, 'foo', nil, nil),
-      Spud::Stack.new(nil, 'bar', nil, nil),
+      Spud::Stack.new(nil, 'foo', nil, nil, nil),
+      Spud::Stack.new(nil, 'bar', nil, nil, nil),
     ])
   end
 
@@ -94,7 +94,7 @@ describe Spud::Context do
     c = Spud::Context.new
     c.stack_types = %w[ foo ]
     expect(c.stacks).to eq([
-      Spud::Stack.new(nil, 'foo', nil, nil),
+      Spud::Stack.new(nil, 'foo', nil, nil, nil),
     ])
   end
 
@@ -106,9 +106,9 @@ describe Spud::Context do
     c = Spud::Context.new
     c.stack_types = %w[ foo bar baz ]
     expect(c.stacks).to eq([
-      Spud::Stack.new(nil, 'foo', nil, nil),
-      Spud::Stack.new('BarName', 'bar', nil, nil),
-      Spud::Stack.new('BazName', 'baz', 'myaccount', 'my-region-1'),
+      Spud::Stack.new(nil, 'foo', nil, nil, nil),
+      Spud::Stack.new('BarName', 'bar', nil, nil, nil),
+      Spud::Stack.new('BazName', 'baz', 'myaccount', 'my-region-1', nil),
     ])
   end
 
@@ -120,8 +120,8 @@ describe Spud::Context do
 
     data = capture_save c
     expect(data).to eq({"default"=>{
-      "foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>nil},
-      "bar"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"NameOfBar"},
+      "foo"=>{"account_alias"=>nil, "region"=>nil, "skip"=>false, "stack_name"=>nil},
+      "bar"=>{"account_alias"=>nil, "region"=>nil, "skip"=>false, "stack_name"=>"NameOfBar"},
     }})
   end
 
@@ -134,7 +134,7 @@ describe Spud::Context do
     c.stack_types = %w[ bar ]
     data = capture_save c
     expect(data).to eq({"default"=>{
-      "bar"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>nil},
+      "bar"=>{"account_alias"=>nil, "region"=>nil, "skip"=> false, "stack_name"=>nil},
       # foo is not upgraded to a hash, nor is it deleted
       "foo"=>"DefaultFooName"}
     })
@@ -153,17 +153,17 @@ describe Spud::Context do
     c = Spud::Context.new
     c.stack_types = %w[ foo ]
     expect(c.stacks).to eq([
-      Spud::Stack.new('DefaultFooName', 'foo', nil, nil),
+      Spud::Stack.new('DefaultFooName', 'foo', nil, nil, nil),
     ])
 
     c.config_set = 'other'
     expect(c.stacks).to eq([
-      Spud::Stack.new('OtherFooName', 'foo', nil, nil),
+      Spud::Stack.new('OtherFooName', 'foo', nil, nil, nil),
     ])
 
     c.config_set = 'yet.another'
     expect(c.stacks).to eq([
-      Spud::Stack.new('YetAnotherFooName', 'foo', nil, nil),
+      Spud::Stack.new('YetAnotherFooName', 'foo', nil, nil, nil),
     ])
   end
 
@@ -182,9 +182,9 @@ describe Spud::Context do
     data = capture_save c
 
     expect(data).to eq({
-      "set1"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"Set1Foo"}},
-      "set2"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"Set2Foo"}},
-      "set"=>{"three"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"SetThreeFoo"}} },
+      "set1"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "skip"=>false, "stack_name"=>"Set1Foo"}},
+      "set2"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "skip"=>false, "stack_name"=>"Set2Foo"}},
+      "set"=>{"three"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "skip"=>false, "stack_name"=>"SetThreeFoo"}} },
     })
   end
 

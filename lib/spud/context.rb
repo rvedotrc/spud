@@ -2,13 +2,14 @@ module Spud
 
   class Stack
     attr_reader :type
-    attr_accessor :account_alias, :name, :region
+    attr_accessor :account_alias, :name, :region, :skip
 
-    def initialize(name, type, account_alias, region)
+    def initialize(name, type, account_alias, region, skip)
       @name = name
       @account_alias = account_alias
       @type = type
       @region = region
+      @skip = skip
     end
 
     def to_h
@@ -16,7 +17,8 @@ module Spud
         name: @name,
         account_alias: @account_alias,
         type: @type,
-        region: @region
+        region: @region,
+        skip: @skip
       }
     end
 
@@ -124,7 +126,7 @@ module Spud
         # TODO: what does having an account_alias actually mean? What does
         # it *do*? What does it mean /not/ to have have one?
         # TODO ditto for region
-        Stack.new(v["stack_name"], type, v["account_alias"], v["region"])
+        Stack.new(v["stack_name"], type, v["account_alias"], v["region"], v["skip"])
       end
     end
 
@@ -134,6 +136,7 @@ module Spud
           "stack_name" => stack.name,
           "region" => stack.region,
           "account_alias" => stack.account_alias,
+          "skip" => stack.skip ? true : false,
         }
       end
     end

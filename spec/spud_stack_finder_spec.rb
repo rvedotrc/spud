@@ -40,7 +40,7 @@ describe Spud::StackFinder do
   end
 
   it "gets a stack name" do
-    @stacks << Spud::Stack.new(nil, 'type1', 'myacc', 'my-region-1')
+    @stacks << Spud::Stack.new(nil, 'type1', 'myacc', 'my-region-1', false)
 
     expect_suggest 'type1', 'Suggestion1'
     expect_prompt 'type1', 'Suggestion1', 'Prompted1'
@@ -52,7 +52,7 @@ describe Spud::StackFinder do
   end
 
   it "does not ask for name if it already has a name" do
-    @stacks << Spud::Stack.new('AlreadyGotAName', 'type1', 'myacc', 'my-region-1')
+    @stacks << Spud::Stack.new('AlreadyGotAName', 'type1', 'myacc', 'my-region-1', false)
 
     do_not_expect_suggest 'type1'
     do_not_expect_prompt 'type1'
@@ -64,9 +64,9 @@ describe Spud::StackFinder do
   end
 
   it "processes stacks in the right order" do
-    @stacks << Spud::Stack.new(nil, 'type-foo', 'myacc', 'my-region-1')
-    @stacks << Spud::Stack.new('X', 'type-bar', 'myacc', 'my-region-1')
-    @stacks << Spud::Stack.new(nil, 'type-baz', 'myacc', 'my-region-1')
+    @stacks << Spud::Stack.new(nil, 'type-foo', 'myacc', 'my-region-1', false)
+    @stacks << Spud::Stack.new('X', 'type-bar', 'myacc', 'my-region-1', false)
+    @stacks << Spud::Stack.new(nil, 'type-baz', 'myacc', 'my-region-1', false)
 
     expect_suggest 'type-foo', 'SuggestionFoo'
     expect_suggest 'type-baz', 'SuggestionBaz'

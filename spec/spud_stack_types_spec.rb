@@ -11,7 +11,11 @@ describe Spud::StackTypes do
       directories.include? arg
     end
 
-    stack_types = Spud::StackTypes.new(nil).list
+    c = Spud::Context.new
+    c.config['foo'] = { 'skip' => false }
+    c.config['bar'] = { 'skip' => false }
+
+    stack_types = Spud::StackTypes.new(c).list
     expect(stack_types).to eq(%w[ bar foo ])
   end
 
