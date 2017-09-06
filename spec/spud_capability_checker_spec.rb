@@ -2,10 +2,13 @@ require 'spud'
 
 describe Spud::CapabilityChecker do
 
-  def a_template_with_resource_of_type(resource_type)
+  def a_template_with_resource_of_type(resource_type, properties = nil)
+    resource = { "Type" => resource_type }
+    resource["Properties"] = properties if properties
+
     a_file_with_data({
       "Resources" => {
-        "MyResource" => { "Type" => resource_type }
+        "MyResource" => resource
       }
     }, "template")
   end
@@ -38,7 +41,7 @@ describe Spud::CapabilityChecker do
     Spud::CapabilityChecker.new(context, tmp_files)
   end
 
-  it "iam not needed and not present" do
+  it "CAPABILITY_IAM not needed and not present" do
     template = a_template_with_resource_of_type("AWS::S3::Bucket")
     description = a_description_with_capabilities(["C"])
     expect(Spud::UserInteraction).not_to receive(:confirm_default_yes)
@@ -51,7 +54,7 @@ describe Spud::CapabilityChecker do
     expect(description.data["Stacks"][0]["Capabilities"]).to eq(["C"])
   end
 
-  it "iam not needed and is present" do
+  it "CAPABILITY_IAM not needed and is present" do
     template = a_template_with_resource_of_type("AWS::S3::Bucket")
     description = a_description_with_capabilities(["C", "CAPABILITY_IAM"])
     expect(Spud::UserInteraction).not_to receive(:confirm_default_yes)
@@ -64,7 +67,7 @@ describe Spud::CapabilityChecker do
     expect(description.data["Stacks"][0]["Capabilities"]).to eq(["C", "CAPABILITY_IAM"])
   end
 
-  it "iam needed and not present (yes)" do
+  it "CAPABILITY_IAM needed and not present (user answers yes)" do
     template = a_template_with_resource_of_type("AWS::IAM::User")
     description = a_description_with_capabilities(["C"])
     expect(Spud::UserInteraction).to receive(:confirm_default_yes) { true }
@@ -77,7 +80,7 @@ describe Spud::CapabilityChecker do
     expect(description.data["Stacks"][0]["Capabilities"]).to eq(["C", "CAPABILITY_IAM"])
   end
 
-  it "iam needed and not present (no)" do
+  it "CAPABILITY_IAM needed and not present (user answers no)" do
     template = a_template_with_resource_of_type("AWS::IAM::User")
     description = a_description_with_capabilities(["C"])
     expect(Spud::UserInteraction).to receive(:confirm_default_yes) { false }
@@ -90,7 +93,7 @@ describe Spud::CapabilityChecker do
     expect(description.data["Stacks"][0]["Capabilities"]).to eq(["C"])
   end
 
-  it "iam needed and is present" do
+  it "CAPABILITY_IAM needed and is present" do
     template = a_template_with_resource_of_type("AWS::IAM::User")
     description = a_description_with_capabilities(["C", "CAPABILITY_IAM"])
     expect(Spud::UserInteraction).not_to receive(:confirm_default_yes)
@@ -101,6 +104,71 @@ describe Spud::CapabilityChecker do
     expect(ok).to be_truthy
 
     expect(description.data["Stacks"][0]["Capabilities"]).to eq(["C", "CAPABILITY_IAM"])
+  end
+
+  it "CAPABILITY_IAM needed and CAPABILITY_NAMED_IAM is present" do
+    template = a_template_with_resource_of_type("AWS::IAM::User")
+    description = a_description_with_capabilities(["C", "CAPABILITY_NAMED_IAM"])
+    expect(Spud::UserInteraction).not_to receive(:confirm_default_yes)
+    expect(Spud::UserInteraction).not_to receive(:confirm_default_no)
+
+    checker = make_checker({ "blue" => [ template, description ] })
+    ok = checker.check?
+    expect(ok).to be_truthy
+
+    expect(description.data["Stacks"][0]["Capabilities"]).to eq(["C", "CAPABILITY_NAMED_IAM"])
+  end
+
+  it "CAPABILITY_NAMED_IAM not needed and is present" do
+    template = a_template_with_resource_of_type("AWS::S3::Bucket")
+    description = a_description_with_capabilities(["C", "CAPABILITY_NAMED_IAM"])
+    expect(Spud::UserInteraction).not_to receive(:confirm_default_yes)
+    expect(Spud::UserInteraction).not_to receive(:confirm_default_no)
+
+    checker = make_checker({ "blue" => [ template, description ] })
+    ok = checker.check?
+    expect(ok).to be_truthy
+
+    expect(description.data["Stacks"][0]["Capabilities"]).to eq(["C", "CAPABILITY_NAMED_IAM"])
+  end
+
+  it "CAPABILITY_NAMED_IAM needed and not present (user answers yes)" do
+    template = a_template_with_resource_of_type("AWS::IAM::User", { "UserName" => "J" })
+    description = a_description_with_capabilities(["C"])
+    expect(Spud::UserInteraction).to receive(:confirm_default_yes) { true }
+    expect(Spud::UserInteraction).not_to receive(:confirm_default_no)
+
+    checker = make_checker({ "blue" => [ template, description ] })
+    ok = checker.check?
+    expect(ok).to be_truthy
+
+    expect(description.data["Stacks"][0]["Capabilities"]).to eq(["C", "CAPABILITY_NAMED_IAM"])
+  end
+
+  it "CAPABILITY_NAMED_IAM needed and not present (user answers no)" do
+    template = a_template_with_resource_of_type("AWS::IAM::User", { "UserName" => "J" })
+    description = a_description_with_capabilities(["C"])
+    expect(Spud::UserInteraction).to receive(:confirm_default_yes) { false }
+    expect(Spud::UserInteraction).not_to receive(:confirm_default_no)
+
+    checker = make_checker({ "blue" => [ template, description ] })
+    ok = checker.check?
+    expect(ok).to be_falsy
+
+    expect(description.data["Stacks"][0]["Capabilities"]).to eq(["C"])
+  end
+
+  it "CAPABILITY_NAMED_IAM needed and is present" do
+    template = a_template_with_resource_of_type("AWS::IAM::User", { "UserName" => "J" })
+    description = a_description_with_capabilities(["C", "CAPABILITY_NAMED_IAM"])
+    expect(Spud::UserInteraction).not_to receive(:confirm_default_yes)
+    expect(Spud::UserInteraction).not_to receive(:confirm_default_no)
+
+    checker = make_checker({ "blue" => [ template, description ] })
+    ok = checker.check?
+    expect(ok).to be_truthy
+
+    expect(description.data["Stacks"][0]["Capabilities"]).to eq(["C", "CAPABILITY_NAMED_IAM"])
   end
 
 end
