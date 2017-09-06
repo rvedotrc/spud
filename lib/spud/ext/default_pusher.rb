@@ -35,6 +35,10 @@ module Spud
         Aws::CloudFormation::Client.new(get_config(details))
       end
 
+      def get_s3_client(details)
+        Aws::S3::Client.new(get_config(details))
+      end
+
       # Get a CloudFormation client config for pushing a specific stack
       def get_config(details)
         config = {}
@@ -53,8 +57,9 @@ module Spud
 
       def prepare_stack(context, stack_type, details)
         cfn_client = get_client(details)
+        s3_client = get_s3_client(details)
 
-        change_set_id = create_change_set context, details, cfn_client
+        change_set_id = create_change_set context, details, cfn_client, s3_client
         change_set_description = wait_for_change_set_to_be_available change_set_id, cfn_client
         display_change_set change_set_description
 
@@ -75,7 +80,7 @@ module Spud
         watch_stack_events change_set_description.stack_id, cfn_client, start - 60
       end
 
-      def create_change_set(context, details, cfn_client)
+      def create_change_set(context, details, cfn_client, s3_client)
         change_set_name = "spud-changeset-#{Time.now.to_i}"
 
         # :name, :region, :account_alias, :template, :description
@@ -95,9 +100,8 @@ module Spud
         end
         puts "Creating #{change_set_type} change set for stack #{stack_name_or_id}"
 
-        r = cfn_client.create_change_set(
+        r = try_create_change_set(cfn_client, s3_client, template,
           stack_name: stack_name_or_id,
-          template_body: template,
           parameters: description["Parameters"].map do |param|
             {
               parameter_key: param["ParameterKey"],
@@ -117,6 +121,45 @@ module Spud
         )
 
         r.id
+      end
+
+      def try_create_change_set(cfn_client, s3_client, template, request_parameters)
+        begin
+          cfn_client.create_change_set(request_parameters.merge template_body: template)
+        rescue Aws::CloudFormation::Errors::ValidationError => e
+          # Example:
+          # "1 validation error detected: Value 'lotsandlotsofjson' at 'templateBody' failed to satisfy constraint: Member must have length less than or equal to 51200"
+          if e.to_s.match(/templateBody.*length less than/)
+            puts "Validation error encountered: #{truncate_cf_error_message e.to_s}"
+            puts "This can happen with very large templates.  About to try again via an S3 bucket (where the limit is higher), or press ctrl-C to abort"
+            try_create_change_set_via_s3(cfn_client, s3_client, template, request_parameters)
+          else
+            raise
+          end
+        end
+      end
+
+      def truncate_cf_error_message(s)
+        if s.length > 150
+          s[0..50] + "...(omitted for brevity)..." + s[-100..-1]
+        else
+          s
+        end
+      end
+
+      def try_create_change_set_via_s3(cfn_client, s3_client, template, request_parameters)
+        bucket = Spud::UserInteraction.get_mandatory_text(
+          question: "Enter S3 bucket name to use for temporary object"
+        )
+        key = "spud-template-#{Time.now.to_f}.json"
+
+        begin
+          s3_client.put_object(bucket: bucket, key: key, body: template)
+          url = Aws::S3::Resource.new(client: s3_client).bucket(bucket).object(key).public_url
+          cfn_client.create_change_set(request_parameters.merge template_url: url)
+        ensure
+          s3_client.delete_object(bucket: bucket, key: key)
+        end
       end
 
       def wait_for_change_set_to_be_available(change_set_id, cfn_client)
