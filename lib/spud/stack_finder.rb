@@ -11,12 +11,12 @@ module Spud
     def get_names
       stacks = @context.stacks
       stacks.each do |stack|
-        # FIXME saving the name should probably only happen right at the end,
+        # Maybe saving these details should probably only happen right at the end,
         # when the stacks have been successfully pushed to AWS; and then, do
         # config load/amend/save in as small a window as possible.
         stack.name ||= prompted_name(stack.type)
         stack.region ||= prompted_region(stack.type)
-        stack.account_alias ||= prompted_account_alias(stack.region)
+        stack.account_alias ||= prompted_account_alias(stack.type)
       end
       stacks
     end
@@ -67,9 +67,9 @@ module Spud
       end
     end
 
-    def prompted_account_alias(region)
+    def prompted_account_alias(type)
       return nil if @context.extensions.account_alias_prompter.nil?
-      @context.extensions.account_alias_prompter.prompt(region)
+      @context.extensions.account_alias_prompter.prompt(type)
     end
 
   end

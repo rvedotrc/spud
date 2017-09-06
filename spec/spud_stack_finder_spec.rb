@@ -103,6 +103,29 @@ describe Spud::StackFinder do
     expect(@stacks.map &:region).to eq(%w[ my-region-1 ])
   end
 
+  it "gets a stack account alias" do
+    @stacks << Spud::Stack.new('MyStack', 'type1', nil, 'my-region-1', false)
+
+    allow(@context.extensions).to receive(:account_alias_prompter).and_return(double('account_alias_prompter'))
+    expect(@context.extensions.account_alias_prompter).to receive(:prompt).with('type1').and_return('myacc')
+
+    r = Spud::StackFinder.new(@context).get_names
+
+    expect(r).to eq(@stacks)
+    expect(@stacks.map &:account_alias).to eq(%w[ myacc ])
+  end
+
+  it "does not ask for account alias if it already has an account alias" do
+    @stacks << Spud::Stack.new('MyStack', 'type1', 'myacc', 'my-region-1', false)
+
+    do_not_expect_region_prompt 'type1'
+
+    r = Spud::StackFinder.new(@context).get_names
+
+    expect(r).to eq(@stacks)
+    expect(@stacks.map &:region).to eq(%w[ my-region-1 ])
+  end
+
   it "processes stacks in the right order" do
     @stacks << Spud::Stack.new(nil, 'type-foo', 'myacc', 'my-region-1', false)
     @stacks << Spud::Stack.new('X', 'type-bar', 'myacc', 'my-region-1', false)
