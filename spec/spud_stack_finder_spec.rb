@@ -23,11 +23,11 @@ describe Spud::StackFinder do
     allow(@context).to receive(:extensions).and_return(extensions)
   end
 
-  def expect_suggest(type, response)
+  def expect_name_suggest(type, response)
     expect(@stack_name_suggester).to receive(:suggest_name).with(@context, type).and_return(response)
   end
 
-  def do_not_expect_suggest(type)
+  def do_not_expect_name_suggest(type)
     expect(@stack_name_suggester).not_to receive(:suggest_name).with(@context, type)
   end
 
@@ -35,14 +35,14 @@ describe Spud::StackFinder do
     expect(Spud::UserInteraction).to receive(:get_mandatory_text).with(name_prompt_for_type(type, prefill)).and_return(response).ordered
   end
 
-  def do_not_expect_prompt(type)
+  def do_not_expect_name_prompt(type)
     expect(Spud::UserInteraction).not_to receive(:get_mandatory_text).with(name_prompt_for_type(type))
   end
 
   it "gets a stack name" do
     @stacks << Spud::Stack.new(nil, 'type1', 'myacc', 'my-region-1', false)
 
-    expect_suggest 'type1', 'Suggestion1'
+    expect_name_suggest 'type1', 'Suggestion1'
     expect_name_prompt 'type1', 'Suggestion1', 'Prompted1'
 
     r = Spud::StackFinder.new(@context).get_names
@@ -54,8 +54,8 @@ describe Spud::StackFinder do
   it "does not ask for name if it already has a name" do
     @stacks << Spud::Stack.new('AlreadyGotAName', 'type1', 'myacc', 'my-region-1', false)
 
-    do_not_expect_suggest 'type1'
-    do_not_expect_prompt 'type1'
+    do_not_expect_name_suggest 'type1'
+    do_not_expect_name_prompt 'type1'
 
     r = Spud::StackFinder.new(@context).get_names
 
@@ -68,8 +68,8 @@ describe Spud::StackFinder do
     @stacks << Spud::Stack.new('X', 'type-bar', 'myacc', 'my-region-1', false)
     @stacks << Spud::Stack.new(nil, 'type-baz', 'myacc', 'my-region-1', false)
 
-    expect_suggest 'type-foo', 'SuggestionFoo'
-    expect_suggest 'type-baz', 'SuggestionBaz'
+    expect_name_suggest 'type-foo', 'SuggestionFoo'
+    expect_name_suggest 'type-baz', 'SuggestionBaz'
 
     # We care about the order of the prompts (but not the suggests)
     # i.e. in the same order as context.stacks
