@@ -136,8 +136,9 @@ module Spud
           "stack_name" => stack.name,
           "region" => stack.region,
           "account_alias" => stack.account_alias,
-          "skip" => stack.skip ? true : false,
         }
+
+        config[stack.type]["skip"] = true if stack.skip
       end
     end
 

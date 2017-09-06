@@ -120,8 +120,48 @@ describe Spud::Context do
 
     data = capture_save c
     expect(data).to eq({"default"=>{
-      "foo"=>{"account_alias"=>nil, "region"=>nil, "skip"=>false, "stack_name"=>nil},
-      "bar"=>{"account_alias"=>nil, "region"=>nil, "skip"=>false, "stack_name"=>"NameOfBar"},
+      "foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>nil},
+      "bar"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"NameOfBar"},
+    }})
+  end
+
+  it "saves stack regions" do
+    given_no_file
+    c = Spud::Context.new
+    c.stack_types = %w[ foo bar ]
+    c.stacks.last.region = 'my-region-1'
+
+    data = capture_save c
+    expect(data).to eq({"default"=>{
+      "foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>nil},
+      "bar"=>{"account_alias"=>nil, "region"=>'my-region-1', "stack_name"=>nil},
+    }})
+  end
+
+  it "saves stack account aliases" do
+    given_no_file
+    c = Spud::Context.new
+    c.stack_types = %w[ foo bar ]
+    c.stacks.last.account_alias = 'myacc'
+
+    data = capture_save c
+    expect(data).to eq({"default"=>{
+      "foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>nil},
+      "bar"=>{"account_alias"=>'myacc', "region"=>nil, "stack_name"=>nil},
+    }})
+  end
+
+  it "saves stack skip flag" do
+    given_no_file
+    c = Spud::Context.new
+    c.stack_types = %w[ foo bar ]
+    c.stacks.first.skip = false
+    c.stacks.last.skip = true
+
+    data = capture_save c
+    expect(data).to eq({"default"=>{
+      "foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>nil},
+      "bar"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>nil, "skip"=>true},
     }})
   end
 
@@ -134,7 +174,7 @@ describe Spud::Context do
     c.stack_types = %w[ bar ]
     data = capture_save c
     expect(data).to eq({"default"=>{
-      "bar"=>{"account_alias"=>nil, "region"=>nil, "skip"=> false, "stack_name"=>nil},
+      "bar"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>nil},
       # foo is not upgraded to a hash, nor is it deleted
       "foo"=>"DefaultFooName"}
     })
@@ -182,9 +222,9 @@ describe Spud::Context do
     data = capture_save c
 
     expect(data).to eq({
-      "set1"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "skip"=>false, "stack_name"=>"Set1Foo"}},
-      "set2"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "skip"=>false, "stack_name"=>"Set2Foo"}},
-      "set"=>{"three"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "skip"=>false, "stack_name"=>"SetThreeFoo"}} },
+      "set1"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"Set1Foo"}},
+      "set2"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"Set2Foo"}},
+      "set"=>{"three"=>{"foo"=>{"account_alias"=>nil, "region"=>nil, "stack_name"=>"SetThreeFoo"}} },
     })
   end
 
