@@ -1,6 +1,6 @@
 require 'spud'
 
-RSpec::Matchers.define :prompt_for_type do |type, prefill|
+RSpec::Matchers.define :name_prompt_for_type do |type, prefill|
   match do |actual|
     (
       actual[:question] == "Enter name for the #{type.inspect} stack" \
@@ -31,19 +31,19 @@ describe Spud::StackFinder do
     expect(@stack_name_suggester).not_to receive(:suggest_name).with(@context, type)
   end
 
-  def expect_prompt(type, prefill, response)
-    expect(Spud::UserInteraction).to receive(:get_mandatory_text).with(prompt_for_type(type, prefill)).and_return(response).ordered
+  def expect_name_prompt(type, prefill, response)
+    expect(Spud::UserInteraction).to receive(:get_mandatory_text).with(name_prompt_for_type(type, prefill)).and_return(response).ordered
   end
 
   def do_not_expect_prompt(type)
-    expect(Spud::UserInteraction).not_to receive(:get_mandatory_text).with(prompt_for_type(type))
+    expect(Spud::UserInteraction).not_to receive(:get_mandatory_text).with(name_prompt_for_type(type))
   end
 
   it "gets a stack name" do
     @stacks << Spud::Stack.new(nil, 'type1', 'myacc', 'my-region-1', false)
 
     expect_suggest 'type1', 'Suggestion1'
-    expect_prompt 'type1', 'Suggestion1', 'Prompted1'
+    expect_name_prompt 'type1', 'Suggestion1', 'Prompted1'
 
     r = Spud::StackFinder.new(@context).get_names
 
@@ -73,8 +73,8 @@ describe Spud::StackFinder do
 
     # We care about the order of the prompts (but not the suggests)
     # i.e. in the same order as context.stacks
-    expect_prompt 'type-foo', 'SuggestionFoo', 'PromptedFoo'
-    expect_prompt 'type-baz', 'SuggestionBaz', 'PromptedBaz'
+    expect_name_prompt 'type-foo', 'SuggestionFoo', 'PromptedFoo'
+    expect_name_prompt 'type-baz', 'SuggestionBaz', 'PromptedBaz'
 
     Spud::StackFinder.new(@context).get_names
   end
