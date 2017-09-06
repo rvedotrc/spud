@@ -53,10 +53,18 @@ module Spud
     end
 
     def prompted_region(type)
-      UserInteraction.get_mandatory_text(
-        question: "Enter AWS region for the #{type.inspect} stack",
-        prefill: ENV["AWS_REGION"],
-      )
+      loop do
+        region = UserInteraction.get_mandatory_text(
+          question: "Enter AWS region for the #{type.inspect} stack",
+          prefill: ENV["AWS_REGION"],
+        )
+
+        if Aws.partition('aws').service('CloudFormation').regions.include? region
+          return region
+        end
+
+        puts "CloudFormation is not supported in that region, try again"
+      end
     end
 
     def prompted_account_alias(region)

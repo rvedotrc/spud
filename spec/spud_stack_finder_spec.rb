@@ -10,6 +10,16 @@ RSpec::Matchers.define :name_prompt_for_type do |type, prefill|
   end
 end
 
+RSpec::Matchers.define :region_prompt_for_type do |type|
+  match do |actual|
+    (
+      actual[:question] == "Enter AWS region for the #{type.inspect} stack" \
+      and \
+      actual[:prefill].nil?
+    )
+  end
+end
+
 describe Spud::StackFinder do
 
   before do
@@ -39,6 +49,14 @@ describe Spud::StackFinder do
     expect(Spud::UserInteraction).not_to receive(:get_mandatory_text).with(name_prompt_for_type(type))
   end
 
+  def expect_region_prompt(type, response)
+    expect(Spud::UserInteraction).to receive(:get_mandatory_text).with(region_prompt_for_type(type)).and_return(response).ordered
+  end
+
+  def do_not_expect_region_prompt(type)
+    expect(Spud::UserInteraction).not_to receive(:get_mandatory_text).with(region_prompt_for_type(type))
+  end
+
   it "gets a stack name" do
     @stacks << Spud::Stack.new(nil, 'type1', 'myacc', 'my-region-1', false)
 
@@ -61,6 +79,28 @@ describe Spud::StackFinder do
 
     expect(r).to eq(@stacks)
     expect(@stacks.map &:name).to eq(%w[ AlreadyGotAName ])
+  end
+
+  it "gets a stack region" do
+    @stacks << Spud::Stack.new('MyStack', 'type1', 'myacc', nil, false)
+
+    expect_region_prompt 'type1', 'eu-west-2'
+
+    r = Spud::StackFinder.new(@context).get_names
+
+    expect(r).to eq(@stacks)
+    expect(@stacks.map &:region).to eq(%w[ eu-west-2 ])
+  end
+
+  it "does not ask for region if it already has a region" do
+    @stacks << Spud::Stack.new('MyStack', 'type1', 'myacc', 'my-region-1', false)
+
+    do_not_expect_region_prompt 'type1'
+
+    r = Spud::StackFinder.new(@context).get_names
+
+    expect(r).to eq(@stacks)
+    expect(@stacks.map &:region).to eq(%w[ my-region-1 ])
   end
 
   it "processes stacks in the right order" do
@@ -90,6 +130,10 @@ describe Spud::StackFinder do
 
   it "loops until a valid name is entered" do
     # TODO: if the user enters an invalid stack name, loop
+  end
+
+  it "loops until a valid region is entered" do
+    # TODO: if the user enters an invalid region, loop
   end
 
 end
