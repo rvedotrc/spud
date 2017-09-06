@@ -10,7 +10,8 @@ module Spud
 
     def list
       Dir.new('src').entries
-        .reject {|s| s.start_with? '.' or (@context.config.key? s and @context.config[s].key? 'skip' and @context.config[s]['skip'])}
+        .reject {|s| s.start_with? '.'}
+        .reject {|s| (@context.config.has_key? s and @context.config[s]['skip'])}
         .keep_if {|s| File.directory?("src/#{s}")}
         .sort
     end
