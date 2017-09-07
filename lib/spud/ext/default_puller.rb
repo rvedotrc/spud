@@ -41,17 +41,18 @@ module Spud
       private
 
       def pull_stack(context, details)
-        puts "stack details: #{details}"
+        puts "Retrieving #{details[:type].inspect} stack #{details[:name].inspect}" \
+          + " from #{details[:region]} in #{details[:account_alias] || 'the default account'}"
 
         stack = details[:name]
-
-        puts "Retrieving stack #{stack.inspect}"
 
         cfn_client = get_client(details)
 
         if stack then
           (description_content, template_content) = fetch_stack_content(cfn_client, stack)
         else
+          # FIXME: unclear that this code path is ever taken, since I think we
+          # always have a stack name
           (description_content, template_content) = default_content
         end
 
