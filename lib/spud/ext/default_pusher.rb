@@ -148,6 +148,11 @@ module Spud
       end
 
       def try_create_change_set_via_s3(cfn_client, s3_client, template, request_parameters)
+        cf_templates_buckets = s3_client.list_buckets.buckets.map(&:name).select {|n| n.start_with? "cf-templates-"}
+        unless cf_templates_buckets.empty?
+          puts "Bucket names here include: #{cf_templates_buckets.sort.join " "}"
+        end
+
         bucket = Spud::UserInteraction.get_mandatory_text(
           question: "Enter S3 bucket name to use for temporary object"
         )
