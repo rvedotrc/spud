@@ -77,6 +77,10 @@ module Spud
       @d
     end
 
+    def save(file)
+      IO.write(file, JSON.pretty_generate(to_h)+"\n")
+    end
+
     def print
       l = @d.keys.map(&:length).max
       l or return
