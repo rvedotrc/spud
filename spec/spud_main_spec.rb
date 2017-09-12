@@ -18,6 +18,14 @@ describe Spud::Main do
     expect(r.output).to match(/Any ARGS are uninterpreted/)
   end
 
+  def expect_return(argv)
+    CaptureStdout.run do
+      expect do
+        Spud::Main.new(argv).run
+      end.not_to raise_error
+    end
+  end
+
   it "runs prepare" do
     argv = %w[ prepare foo bar ]
 
@@ -27,7 +35,7 @@ describe Spud::Main do
     expect(Spud::Apply).not_to receive(:new)
     expect(prepare).to receive(:run)
 
-    Spud::Main.new(argv).run
+    expect_return argv
 
     expect(context.argv).to eq(%w[ foo bar ])
   end
@@ -41,7 +49,7 @@ describe Spud::Main do
     expect(Spud::Prepare).not_to receive(:new)
     expect(prepare).to receive(:run)
 
-    Spud::Main.new(argv).run
+    expect_return argv
 
     expect(context.argv).to eq(%w[ foo bar ])
   end
@@ -64,7 +72,8 @@ describe Spud::Main do
     expect(Spud::Prepare).to receive(:new) {|c| context = c; prepare}
     expect(Spud::Apply).not_to receive(:new)
     expect(prepare).to receive(:run)
-    Spud::Main.new(options + ["prepare"]).run
+    argv = options + ["prepare"]
+    expect_return argv
     context
   end
 
