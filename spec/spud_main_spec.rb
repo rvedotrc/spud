@@ -88,4 +88,14 @@ describe Spud::Main do
     expect(context.config_set).to eq("x.y")
   end
 
+  it "supports -s" do
+    context = context_for_options(%w[ -s some/file/somewhere.json ])
+    expect(context.status_file).to eq("some/file/somewhere.json")
+  end
+
+  it "supports --status-file" do
+    context = context_for_options(%w[ --status-file some/file/somewhere.json ])
+    expect(context.status_file).to eq("some/file/somewhere.json")
+  end
+
 end
