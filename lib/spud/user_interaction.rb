@@ -23,7 +23,7 @@ module Spud
 
       while true
         answer = Readline.readline("#{prompt}: ", true)
-        raise UserInteractionError.new("Failed to read line, probably because there was no tty.") unless answer
+        raise UserInteractionError.new("EOF encountered when reading user input") unless answer
         break if answer.match /\S/
       end
 
@@ -33,6 +33,7 @@ module Spud
     def self.confirm_default_no(opts)
       prompt = opts[:question] + " [y/N]"
       answer = Readline.readline "#{prompt}: "
+      raise UserInteractionError.new("EOF encountered when reading user input") unless answer
       answer = "n" unless answer.match /\S/
       answer.match /^\s*y/i
     end
@@ -40,6 +41,7 @@ module Spud
     def self.confirm_default_yes(opts)
       prompt = opts[:question] + " [Y/n]"
       answer = Readline.readline "#{prompt}: "
+      raise UserInteractionError.new("EOF encountered when reading user input") unless answer
       answer = "y" unless answer.match /\S/
       answer.match /^\s*y/i
     end
