@@ -2,6 +2,9 @@ require 'readline'
 
 module Spud
 
+  class UserInteractionError < StandardError
+  end
+
   class UserInteraction
 
     def self.get_mandatory_text(opts)
@@ -20,6 +23,7 @@ module Spud
 
       while true
         answer = Readline.readline("#{prompt}: ", true)
+        raise UserInteractionError.new("Failed to read line, probably because there was no tty.") unless answer
         break if answer.match /\S/
       end
 
