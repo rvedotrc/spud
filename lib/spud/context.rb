@@ -55,6 +55,7 @@ module Spud
     attr_reader :stack_types
     attr_reader :config_set
     attr_reader :extensions
+    attr_accessor :status_file
 
     def initialize
       @tmp_dir = File.join "tmp", "templates"

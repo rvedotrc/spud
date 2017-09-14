@@ -45,6 +45,9 @@ EOF
         opts.on("-c", "--config-set=KEY", "Which configuration set to use (default: #{context.config_set.inspect}") do |v|
           context.config_set = v
         end
+        opts.on("-s", "--status-file=FILE", "File to write a machine readable version of the comparison results.") do |v|
+          context.status_file = v
+        end
         opts.separator <<'EOF'
 
 Any ARGS are uninterpreted by spud but made available to extensions.
