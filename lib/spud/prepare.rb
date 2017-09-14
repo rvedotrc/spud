@@ -50,7 +50,7 @@ module Spud
       puts ""
       comparison.print
       puts ""
-      comparison.save(context.machine_readable) if context.machine_readable
+      comparison.save(context.status_file) if context.status_file
 
 
       show_instructions
