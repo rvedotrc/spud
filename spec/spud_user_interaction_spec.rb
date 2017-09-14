@@ -22,6 +22,12 @@ describe Spud::UserInteraction do
     expect(answer).to eq("42")
   end
 
+  it "should fail when readline returns nil" do
+    # Readline.readline returns nil when stdin is /dev/null.
+    expect(Readline).to receive(:readline).with("QQQ: ", true) { nil }
+    expect {Spud::UserInteraction.get_mandatory_text(question: "QQQ")}.to raise_exception(Spud::UserInteractionError, /.*EOF.*/i)
+  end
+
   it "should keep asking until a non-blank answer is given" do
     expect(Readline).to receive(:readline).with("QQQ: ", true).and_return("", "  ", " 42 ", "x").exactly(3)
 
@@ -72,6 +78,20 @@ describe Spud::UserInteraction do
 
   it "confirm_default_no other" do
     test_confirm :confirm_default_no, "[y/N]", "foo", false
+  end
+
+  it "should fail when confirm_default_no receives EOF" do
+    expect(Readline).to receive(:readline).with("QQQ? [y/N]: ") { nil }
+    expect {Spud::UserInteraction.confirm_default_no(
+            question: "QQQ?")
+    }.to raise_exception(Spud::UserInteractionError, /.*EOF.*/i)
+  end
+
+  it "should fail when confirm_default_yes receives EOF" do
+    expect(Readline).to receive(:readline).with("QQQ? [Y/n]: ") { nil }
+    expect {Spud::UserInteraction.confirm_default_yes(
+            question: "QQQ?")
+    }.to raise_exception(Spud::UserInteractionError, /.*EOF.*/i)
   end
 
   it "does info_press_return" do

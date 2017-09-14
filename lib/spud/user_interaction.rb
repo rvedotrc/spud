@@ -2,6 +2,9 @@ require 'readline'
 
 module Spud
 
+  class UserInteractionError < StandardError
+  end
+
   class UserInteraction
 
     def self.get_mandatory_text(opts)
@@ -20,6 +23,7 @@ module Spud
 
       while true
         answer = Readline.readline("#{prompt}: ", true)
+        raise UserInteractionError.new("EOF encountered when reading user input") unless answer
         break if answer.match /\S/
       end
 
@@ -29,6 +33,7 @@ module Spud
     def self.confirm_default_no(opts)
       prompt = opts[:question] + " [y/N]"
       answer = Readline.readline "#{prompt}: "
+      raise UserInteractionError.new("EOF encountered when reading user input") unless answer
       answer = "n" unless answer.match /\S/
       answer.match /^\s*y/i
     end
@@ -36,6 +41,7 @@ module Spud
     def self.confirm_default_yes(opts)
       prompt = opts[:question] + " [Y/n]"
       answer = Readline.readline "#{prompt}: "
+      raise UserInteractionError.new("EOF encountered when reading user input") unless answer
       answer = "y" unless answer.match /\S/
       answer.match /^\s*y/i
     end
