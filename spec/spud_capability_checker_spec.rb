@@ -171,4 +171,30 @@ describe Spud::CapabilityChecker do
     expect(description.data["Stacks"][0]["Capabilities"]).to eq(["C", "CAPABILITY_NAMED_IAM"])
   end
 
+  it "CAPABILITY_NAMED_IAM not needed for (inline) Policy" do
+    template = a_template_with_resource_of_type("AWS::IAM::Policy", { "PolicyName" => "J" })
+    description = a_description_with_capabilities(["CAPABILITY_IAM"])
+    expect(Spud::UserInteraction).not_to receive(:confirm_default_yes)
+    expect(Spud::UserInteraction).not_to receive(:confirm_default_no)
+
+    checker = make_checker({ "blue" => [ template, description ] })
+    ok = checker.check?
+    expect(ok).to be_truthy
+
+    expect(description.data["Stacks"][0]["Capabilities"]).to eq(["CAPABILITY_IAM"])
+  end
+
+  it "CAPABILITY_NAMED_IAM is needed for ManagedPolicy" do
+    template = a_template_with_resource_of_type("AWS::IAM::ManagedPolicy", { "ManagedPolicyName" => "J" })
+    description = a_description_with_capabilities(["CAPABILITY_IAM"])
+    expect(Spud::UserInteraction).to receive(:confirm_default_yes) { true }
+    expect(Spud::UserInteraction).not_to receive(:confirm_default_no)
+
+    checker = make_checker({ "blue" => [ template, description ] })
+    ok = checker.check?
+    expect(ok).to be_truthy
+
+    expect(description.data["Stacks"][0]["Capabilities"]).to eq(["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"])
+  end
+
 end

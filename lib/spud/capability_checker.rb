@@ -68,8 +68,8 @@ module Spud
         case res["Type"]
         when "AWS::IAM::Group"
           res["Properties"] and res["Properties"]["GroupName"]
-        when "AWS::IAM::Policy"
-          res["Properties"] and res["Properties"]["PolicyName"]
+        when "AWS::IAM::ManagedPolicy"
+          res["Properties"] and res["Properties"]["ManagedPolicyName"]
         when "AWS::IAM::Role"
           res["Properties"] and res["Properties"]["RoleName"]
         when "AWS::IAM::User"
